@@ -33,7 +33,7 @@ export default function LoginScreen({ onNavigateRegister }) {
             <View style={styles.logoIconWrapper}>
               <MaterialCommunityIcons name="ticket-outline" size={20} color="#fff" />
             </View>
-            <Text style={styles.logoText}>StageDoor</Text>
+            <Text style={styles.logoText}>TheaterGo</Text>
             <TouchableOpacity onPress={toggleTheme} style={styles.themeToggle}>
               <Ionicons name={isDark ? 'sunny-outline' : 'moon-outline'} size={20} color={colors.logoText} />
             </TouchableOpacity>
