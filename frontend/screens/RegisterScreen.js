@@ -1,30 +1,31 @@
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {
-  StyleSheet,
   Text,
   View,
   TextInput,
   TouchableOpacity,
-  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { INDIGO } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 
 export default function RegisterScreen({ onNavigateLogin }) {
+  const { colors, isDark, toggleTheme } = useTheme();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const styles = makeStyles(colors);
 
   return (
     <SafeAreaView style={styles.safe}>
-      <StatusBar style="dark" />
+      <StatusBar style={colors.statusBar} />
       <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -35,7 +36,10 @@ export default function RegisterScreen({ onNavigateLogin }) {
             <View style={styles.logoIconWrapper}>
               <MaterialCommunityIcons name="ticket-outline" size={20} color="#fff" />
             </View>
-            <Text style={styles.logoText}>TheaterGo</Text>
+            <Text style={styles.logoText}>StageDoor</Text>
+            <TouchableOpacity onPress={toggleTheme} style={styles.themeToggle}>
+              <Ionicons name={isDark ? 'sunny-outline' : 'moon-outline'} size={20} color={colors.logoText} />
+            </TouchableOpacity>
           </View>
 
           {/* Card */}
@@ -46,11 +50,11 @@ export default function RegisterScreen({ onNavigateLogin }) {
             {/* Social buttons */}
             <View style={styles.socialRow}>
               <TouchableOpacity style={styles.socialBtn} activeOpacity={0.8}>
-                <MaterialCommunityIcons name="google" size={18} color="#000" />
+                <MaterialCommunityIcons name="google" size={18} color={colors.socialIconColor} />
                 <Text style={styles.socialText}>Google</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.socialBtn} activeOpacity={0.8}>
-                <Ionicons name="logo-apple" size={18} color="#000" />
+                <Ionicons name="logo-apple" size={18} color={colors.socialIconColor} />
                 <Text style={styles.socialText}>
                   <Text style={styles.socialIOS}>iOS </Text>Apple
                 </Text>
@@ -67,11 +71,11 @@ export default function RegisterScreen({ onNavigateLogin }) {
             {/* Full Name field */}
             <Text style={styles.label}>Full Name</Text>
             <View style={styles.inputWrapper}>
-              <Ionicons name="person-outline" size={18} color="#9CA3AF" style={styles.inputIcon} />
+              <Ionicons name="person-outline" size={18} color={colors.iconColor} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="John Doe"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.placeholder}
                 value={fullName}
                 onChangeText={setFullName}
                 autoCapitalize="words"
@@ -82,11 +86,11 @@ export default function RegisterScreen({ onNavigateLogin }) {
             {/* Email field */}
             <Text style={styles.label}>Email Address</Text>
             <View style={styles.inputWrapper}>
-              <Ionicons name="mail-outline" size={18} color="#9CA3AF" style={styles.inputIcon} />
+              <Ionicons name="mail-outline" size={18} color={colors.iconColor} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="you@example.com"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.placeholder}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -98,11 +102,11 @@ export default function RegisterScreen({ onNavigateLogin }) {
             {/* Password field */}
             <Text style={styles.label}>Password</Text>
             <View style={styles.inputWrapper}>
-              <Ionicons name="lock-closed-outline" size={18} color="#9CA3AF" style={styles.inputIcon} />
+              <Ionicons name="lock-closed-outline" size={18} color={colors.iconColor} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="••••••••"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.placeholder}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -112,7 +116,7 @@ export default function RegisterScreen({ onNavigateLogin }) {
                 <Ionicons
                   name={showPassword ? 'eye-outline' : 'eye-off-outline'}
                   size={18}
-                  color="#9CA3AF"
+                  color={colors.iconColor}
                 />
               </TouchableOpacity>
             </View>
@@ -120,11 +124,11 @@ export default function RegisterScreen({ onNavigateLogin }) {
             {/* Confirm Password field */}
             <Text style={styles.label}>Confirm Password</Text>
             <View style={styles.inputWrapper}>
-              <Ionicons name="lock-closed-outline" size={18} color="#9CA3AF" style={styles.inputIcon} />
+              <Ionicons name="lock-closed-outline" size={18} color={colors.iconColor} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="••••••••"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.placeholder}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 secureTextEntry={!showConfirm}
@@ -134,7 +138,7 @@ export default function RegisterScreen({ onNavigateLogin }) {
                 <Ionicons
                   name={showConfirm ? 'eye-outline' : 'eye-off-outline'}
                   size={18}
-                  color="#9CA3AF"
+                  color={colors.iconColor}
                 />
               </TouchableOpacity>
             </View>
@@ -158,10 +162,11 @@ export default function RegisterScreen({ onNavigateLogin }) {
   );
 }
 
-const styles = StyleSheet.create({
+function makeStyles(colors) {
+  return {
   safe: {
     flex: 1,
-    backgroundColor: '#EEF2FF',
+    backgroundColor: colors.background,
   },
   keyboardView: {
     flex: 1,
@@ -185,7 +190,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: INDIGO,
+    backgroundColor: colors.INDIGO,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 8,
@@ -193,13 +198,17 @@ const styles = StyleSheet.create({
   logoText: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1E1B4B',
+    color: colors.logoText,
+    flex: 1,
+  },
+  themeToggle: {
+    padding: 4,
   },
 
   // Card
   card: {
     width: '100%',
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
     borderRadius: 20,
     padding: 28,
     shadowColor: '#000',
@@ -211,13 +220,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#111827',
+    color: colors.title,
     marginBottom: 6,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 13,
-    color: '#6B7280',
+    color: colors.subtitle,
     textAlign: 'center',
     marginBottom: 24,
   },
@@ -235,19 +244,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.socialBorder,
     borderRadius: 10,
     paddingVertical: 10,
-    backgroundColor: '#fff',
+    backgroundColor: colors.socialBg,
   },
   socialText: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#111827',
+    color: colors.socialText,
   },
   socialIOS: {
     fontSize: 10,
-    color: '#6B7280',
+    color: colors.subtitle,
   },
 
   // Divider
@@ -259,13 +268,13 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.dividerLine,
   },
   dividerText: {
     marginHorizontal: 10,
     fontSize: 11,
     fontWeight: '600',
-    color: '#9CA3AF',
+    color: colors.dividerText,
     letterSpacing: 1,
   },
 
@@ -273,16 +282,16 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.label,
     marginBottom: 6,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.inputBorder,
     borderRadius: 10,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.inputBg,
     paddingHorizontal: 12,
     marginBottom: 18,
   },
@@ -293,7 +302,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 46,
     fontSize: 14,
-    color: '#111827',
+    color: colors.inputText,
   },
   eyeBtn: {
     padding: 4,
@@ -301,7 +310,7 @@ const styles = StyleSheet.create({
 
   // Create Account button
   signUpBtn: {
-    backgroundColor: INDIGO,
+    backgroundColor: colors.INDIGO,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
@@ -323,11 +332,12 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 13,
-    color: '#6B7280',
+    color: colors.footerText,
   },
   footerLink: {
     fontSize: 13,
     fontWeight: '600',
-    color: INDIGO,
+    color: colors.INDIGO,
   },
-});
+  };
+}
