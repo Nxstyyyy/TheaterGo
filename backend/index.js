@@ -1,7 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-require('dotenv').config();
+const morgan = require('morgan');
+require('dotenv').config({
+    path: '.env.local'
+});
 
 const authRoutes = require('./routes/auth');
 
@@ -10,6 +13,7 @@ const APP_PORT = process.env.PORT || 5000;
 const app = express();
 app.use(helmet());
 app.use(cors({ origin: '*' }));
+app.use(morgan('dev'));
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
