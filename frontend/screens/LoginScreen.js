@@ -11,14 +11,42 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../context/ThemeContext';
 
-export default function LoginScreen({ onNavigateRegister }) {
+export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) {
   const { colors, isDark, toggleTheme } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const styles = makeStyles(colors);
+
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      alert('Please enter both email and password');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || 'Login failed');
+        return;
+      }
+
+      await AsyncStorage.setItem('token', data.token);
+      onNavigateDiscover();
+    } catch (err) {
+      alert('Could not connect to server');
+      console.error(err);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -43,27 +71,6 @@ export default function LoginScreen({ onNavigateRegister }) {
           <View style={styles.card}>
             <Text style={styles.title}>Welcome Back</Text>
             <Text style={styles.subtitle}>Sign in to access your digital tickets</Text>
-
-            {/* Social buttons */}
-            <View style={styles.socialRow}>
-              <TouchableOpacity style={styles.socialBtn} activeOpacity={0.8}>
-                <MaterialCommunityIcons name="google" size={18} color={colors.socialIconColor} />
-                <Text style={styles.socialText}>Google</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialBtn} activeOpacity={0.8}>
-                <Ionicons name="logo-apple" size={18} color={colors.socialIconColor} />
-                <Text style={styles.socialText}>
-                  <Text style={styles.socialIOS}>iOS </Text>Apple
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Divider */}
-            <View style={styles.dividerRow}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>OR EMAIL</Text>
-              <View style={styles.dividerLine} />
-            </View>
 
             {/* Email field */}
             <Text style={styles.label}>Email Address</Text>
@@ -109,7 +116,7 @@ export default function LoginScreen({ onNavigateRegister }) {
             </View>
 
             {/* Sign In button */}
-            <TouchableOpacity style={styles.signInBtn} activeOpacity={0.85}>
+            <TouchableOpacity style={styles.signInBtn} activeOpacity={0.85} onPress={handleSignIn}>
               <Text style={styles.signInText}>Sign In</Text>
             </TouchableOpacity>
 
@@ -194,53 +201,6 @@ function makeStyles(colors) {
     color: colors.subtitle,
     textAlign: 'center',
     marginBottom: 24,
-  },
-
-  // Social
-  socialRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 24,
-  },
-  socialBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    borderWidth: 1,
-    borderColor: colors.socialBorder,
-    borderRadius: 10,
-    paddingVertical: 10,
-    backgroundColor: colors.socialBg,
-  },
-  socialText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: colors.socialText,
-  },
-  socialIOS: {
-    fontSize: 10,
-    color: colors.subtitle,
-  },
-
-  // Divider
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.dividerLine,
-  },
-  dividerText: {
-    marginHorizontal: 10,
-    fontSize: 11,
-    fontWeight: '600',
-    color: colors.dividerText,
-    letterSpacing: 1,
   },
 
   // Inputs
