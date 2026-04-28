@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -22,6 +23,7 @@ export default function RegisterScreen({ onNavigateLogin, onNavigateDiscover }) 
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const styles = makeStyles(colors);
 
   const handleSignUp = async () => {
@@ -35,6 +37,7 @@ export default function RegisterScreen({ onNavigateLogin, onNavigateDiscover }) 
       return;
     }
 
+    setIsLoading(true);
     try {
       const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/auth/register`, {
         method: 'POST',
@@ -54,6 +57,8 @@ export default function RegisterScreen({ onNavigateLogin, onNavigateDiscover }) 
     } catch (err) {
       alert('Could not connect to server');
       console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -157,8 +162,17 @@ export default function RegisterScreen({ onNavigateLogin, onNavigateDiscover }) 
             </View>
 
             {/* Create Account button */}
-            <TouchableOpacity style={styles.signUpBtn} activeOpacity={0.85} onPress={handleSignUp}>
-              <Text style={styles.signUpText}>Create Account</Text>
+            <TouchableOpacity
+              style={[styles.signUpBtn, isLoading && styles.signUpBtnDisabled]}
+              activeOpacity={0.85}
+              onPress={handleSignUp}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.signUpText}>Create Account</Text>
+              )}
             </TouchableOpacity>
 
             {/* Footer */}
@@ -282,6 +296,9 @@ function makeStyles(colors) {
     alignItems: 'center',
     marginTop: 4,
     marginBottom: 20,
+  },
+  signUpBtnDisabled: {
+    opacity: 0.6,
   },
   signUpText: {
     color: '#fff',

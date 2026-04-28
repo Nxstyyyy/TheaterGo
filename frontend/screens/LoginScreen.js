@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -19,6 +20,7 @@ export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const styles = makeStyles(colors);
 
   const handleSignIn = async () => {
@@ -27,6 +29,7 @@ export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) 
       return;
     }
 
+    setIsLoading(true);
     try {
       const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/auth/login`, {
         method: 'POST',
@@ -45,6 +48,8 @@ export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) 
     } catch (err) {
       alert('Could not connect to server');
       console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -116,8 +121,17 @@ export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) 
             </View>
 
             {/* Sign In button */}
-            <TouchableOpacity style={styles.signInBtn} activeOpacity={0.85} onPress={handleSignIn}>
-              <Text style={styles.signInText}>Sign In</Text>
+            <TouchableOpacity
+              style={[styles.signInBtn, isLoading && styles.signInBtnDisabled]}
+              activeOpacity={0.85}
+              onPress={handleSignIn}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.signInText}>Sign In</Text>
+              )}
             </TouchableOpacity>
 
             {/* Footer */}
@@ -252,6 +266,9 @@ function makeStyles(colors) {
     alignItems: 'center',
     marginTop: 4,
     marginBottom: 20,
+  },
+  signInBtnDisabled: {
+    opacity: 0.6,
   },
   signInText: {
     color: '#fff',

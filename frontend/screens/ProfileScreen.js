@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,70 +6,65 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { authFetch } from '../utils/authFetch';
 import { useTheme } from '../context/ThemeContext';
 
-const UPCOMING = [
-  {
-    id: '1',
-    badge: 'CONFIRMED',
-    title: 'Hamilton: An American Musical',
-    venue: 'Richard Rodgers Theatre, NY',
-    date: 'Oct 24',
-    time: '7:30 PM',
-    seats: 'Row M, Seat 12-13',
-    image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80',
-  },
-  {
-    id: '2',
-    badge: null,
-    title: 'Wicked',
-    venue: 'Gershwin Theatre, NY',
-    date: 'Nov 12',
-    time: '8:00 PM',
-    seats: 'Row B, Seat 4',
-    image: 'https://images.unsplash.com/photo-1507924538820-ede94a04019d?w=600&q=80',
-  },
-];
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-const PAST = [
-  {
-    id: '1',
-    title: 'Hadestown',
-    date: 'September 14, 2023',
-    price: '$145.00',
-    venue: 'Walter Kerr Theatre',
-    image: 'https://images.unsplash.com/photo-1464375117522-1311d6a5b81f?w=100&q=80',
-  },
-  {
-    id: '2',
-    title: 'Moulin Rouge! The Musical',
-    date: 'August 02, 2023',
-    price: '$189.00',
-    venue: 'Al Hirschfeld Theatre',
-    image: 'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=100&q=80',
-  },
-  {
-    id: '3',
-    title: 'The Lion King',
-    date: 'May 21, 2023',
-    price: '$210.00',
-    venue: 'Minskoff Theatre',
-    image: 'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?w=100&q=80',
-  },
-];
-
-export default function ProfileScreen({ onNavigateDiscover, onNavigateTickets, onLogout }) {
+export default function ProfileScreen({ onNavigateDiscover, onLogout }) {
   const { colors } = useTheme();
   const [activeTab, setActiveTab] = useState('Profile');
   const [showAllPast, setShowAllPast] = useState(false);
+  const [upcoming, setUpcoming] = useState([]);
+  const [past, setPast] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
   const s = makeStyles(colors);
 
-  const visiblePast = showAllPast ? PAST : PAST.slice(0, 3);
+  useEffect(() => {
+    (async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (token) {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          setUser(payload);
+        }
+
+        const [upRes, pastRes] = await Promise.all([
+          authFetch(`${API_URL}/api/bookings/upcoming`),
+          authFetch(`${API_URL}/api/bookings/past`),
+        ]);
+
+        if (upRes?.ok) setUpcoming(await upRes.json());
+        if (pastRes?.ok) setPast(await pastRes.json());
+      } catch (err) {
+        console.error('Error fetching bookings:', err.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const visiblePast = showAllPast ? past : past.slice(0, 3);
+
+  const formatDate = (dateStr) =>
+    new Date(dateStr).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  const formatShowDate = (dateStr) =>
+    new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+  const formatTime = (timeStr) => {
+    const [h, m] = timeStr.split(':');
+    const d = new Date();
+    d.setHours(+h, +m);
+    return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  };
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('token');
@@ -86,8 +81,9 @@ export default function ProfileScreen({ onNavigateDiscover, onNavigateTickets, o
           <MaterialCommunityIcons name="theater" size={22} color={colors.INDIGO} />
           <Text style={s.logoText}>Theater Go</Text>
         </View>
-        <TouchableOpacity>
-          <Ionicons name="settings-outline" size={22} color={colors.sectionTitle} />
+
+        <TouchableOpacity onPress={handleLogout} activeOpacity={0.7}>
+          <Ionicons name="log-out-outline" size={18} color={colors.logoutColor} />
         </TouchableOpacity>
       </View>
 
@@ -95,103 +91,108 @@ export default function ProfileScreen({ onNavigateDiscover, onNavigateTickets, o
         {/* Avatar */}
         <View style={s.avatarWrapper}>
           <Image
-            source={{ uri: 'https://api.dicebear.com/7.x/adventurer/png?seed=Alex' }}
+            source={{ uri: `https://api.dicebear.com/7.x/adventurer/png?seed=${user?.name ?? 'User'}` }}
             style={s.avatar}
           />
           <View style={s.avatarBadge}>
             <Ionicons name="pencil" size={11} color="#fff" />
           </View>
         </View>
-        <Text style={s.userName}>Alex Thompson</Text>
-        <Text style={s.userSince}>Patron of the Arts since 2021</Text>
+        <Text style={s.userName}>{user?.name ?? '—'}</Text>
+        <Text style={s.userSince}>{user?.email ?? ''}</Text>
 
-        {/* Upcoming Bookings */}
-        <View style={s.sectionHeader}>
-          <Text style={s.sectionTitle}>Upcoming Bookings</Text>
-          <TouchableOpacity>
-            <Text style={s.viewAll}>View all</Text>
-          </TouchableOpacity>
-        </View>
+        {loading ? (
+          <ActivityIndicator size="large" color={colors.INDIGO} style={{ marginTop: 40 }} />
+        ) : (
+          <>
+            {/* Upcoming Bookings */}
+            <View style={s.sectionHeader}>
+              <Text style={s.sectionTitle}>Upcoming Bookings</Text>
+            </View>
 
-        {UPCOMING.map((item) => (
-          <View key={item.id} style={s.bookingCard}>
-            <Image source={{ uri: item.image }} style={s.bookingImage} />
-            {item.badge && (
-              <View style={s.badge}>
-                <Text style={s.badgeText}>{item.badge}</Text>
-              </View>
+            {upcoming.length === 0 ? (
+              <Text style={s.emptyText}>No upcoming bookings.</Text>
+            ) : (
+              upcoming.map((item) => (
+                <View key={item.booking_id} style={s.bookingCard}>
+                  <Image source={{ uri: item.image_url }} style={s.bookingImage} />
+                  {item.status === 'confirmed' && (
+                    <View style={s.badge}>
+                      <Text style={s.badgeText}>CONFIRMED</Text>
+                    </View>
+                  )}
+                  <View style={s.bookingBody}>
+                    <Text style={s.bookingTitle}>{item.title}</Text>
+                    <View style={s.bookingVenueRow}>
+                      <Ionicons name="location-outline" size={13} color={colors.venueSubtext} />
+                      <Text style={s.bookingVenue}>{item.venue_name}{item.city ? `, ${item.city}` : ''}</Text>
+                      
+                    </View>
+                                        <View style={s.bookedAtRow}>
+                      <Ionicons name="time-outline" size={12} color={colors.venueSubtext} />
+                      <Text style={s.bookedAtText}>Booked {formatDate(item.booked_at)}</Text>
+                    </View>
+                    <View style={s.metaRow}>
+                      <View style={s.metaBox}>
+                        <Text style={s.metaLabel}>Date & Time</Text>
+                        <Text style={s.metaValue}>{formatShowDate(item.show_date)} • {formatTime(item.show_time)}</Text>
+                      </View>
+                      <View style={s.metaBox}>
+                        <Text style={s.metaLabel}>Seats</Text>
+                        <Text style={s.metaValue}>{item.seats ?? '—'}</Text>
+                      </View>
+                    </View>
+
+                    <TouchableOpacity
+                      style={[s.ticketBtn, item.status !== 'confirmed' && s.ticketBtnOutline]}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={[s.ticketBtnText, item.status !== 'confirmed' && s.ticketBtnTextOutline]}>
+                        View Ticket
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))
             )}
-            <View style={s.bookingBody}>
-              <Text style={s.bookingTitle}>{item.title}</Text>
-              <View style={s.bookingVenueRow}>
-                <Ionicons name="location-outline" size={13} color={colors.venueSubtext} />
-                <Text style={s.bookingVenue}>{item.venue}</Text>
-              </View>
-              <View style={s.metaRow}>
-                <View style={s.metaBox}>
-                  <Text style={s.metaLabel}>Date & Time</Text>
-                  <Text style={s.metaValue}>{item.date} • {item.time}</Text>
-                </View>
-                <View style={s.metaBox}>
-                  <Text style={s.metaLabel}>Seats</Text>
-                  <Text style={s.metaValue}>{item.seats}</Text>
-                </View>
-              </View>
-              <TouchableOpacity
-                style={[s.ticketBtn, !item.badge && s.ticketBtnOutline]}
-                activeOpacity={0.85}
-              >
-                <Text style={[s.ticketBtnText, !item.badge && s.ticketBtnTextOutline]}>
-                  View Ticket
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))}
 
-        {/* Past Bookings */}
-        <Text style={s.sectionTitle}>Past Bookings</Text>
-        <View style={s.pastList}>
-          {visiblePast.map((item, index) => (
-            <View
-              key={item.id}
-              style={[s.pastItem, index < visiblePast.length - 1 && s.pastItemBorder]}
-            >
-              <Image source={{ uri: item.image }} style={s.pastImage} />
-              <View style={s.pastInfo}>
-                <Text style={s.pastTitle}>{item.title}</Text>
-                <Text style={s.pastDate}>{item.date}</Text>
-              </View>
-              <View style={s.pastRight}>
-                <Text style={s.pastPrice}>{item.price}</Text>
-                <Text style={s.pastVenue}>{item.venue}</Text>
-              </View>
-            </View>
-          ))}
-        </View>
+            {/* Past Bookings */}
+            <Text style={s.sectionTitle}>Past Bookings</Text>
+            {past.length === 0 ? (
+              <Text style={s.emptyText}>No past bookings.</Text>
+            ) : (
+              <>
+                <View style={s.pastList}>
+                  {visiblePast.map((item, index) => (
+                    <View
+                      key={item.booking_id}
+                      style={[s.pastItem, index < visiblePast.length - 1 && s.pastItemBorder]}
+                    >
+                      <Image source={{ uri: item.image_url }} style={s.pastImage} />
+                      <View style={s.pastInfo}>
+                        <Text style={s.pastTitle}>{item.title}</Text>
+                        <Text style={s.pastDate}>{formatDate(item.show_date)}</Text>
+                        <Text style={s.bookedAtText}>Booked {formatDate(item.booked_at)}</Text>
+                      </View>
+                      <View style={s.pastRight}>
+                        <Text style={s.pastPrice}>${Number(item.total_price).toFixed(2)}</Text>
+                        <Text style={s.pastVenue}>{item.venue_name}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
 
-        {PAST.length > 3 && (
-          <TouchableOpacity onPress={() => setShowAllPast(!showAllPast)} style={s.showMore}>
-            <Text style={s.showMoreText}>{showAllPast ? 'Show less' : 'Show more'}</Text>
-          </TouchableOpacity>
+                {past.length > 3 && (
+                  <TouchableOpacity onPress={() => setShowAllPast(!showAllPast)} style={s.showMore}>
+                    <Text style={s.showMoreText}>{showAllPast ? 'Show less' : 'Show more'}</Text>
+                  </TouchableOpacity>
+                )}
+              </>
+            )}
+          </>
         )}
 
         {/* Account Settings */}
-        <Text style={[s.sectionTitle, { marginTop: 28 }]}>Account Settings</Text>
-        <View style={s.settingsList}>
-          <TouchableOpacity style={[s.settingsRow, s.settingsRowTop]} activeOpacity={0.7}>
-            <View style={s.settingsLeft}>
-              <Ionicons name="person-outline" size={18} color={colors.sectionTitle} />
-              <Text style={s.settingsLabel}>Personal Info</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color={colors.navInactive} />
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity style={s.logoutRow} onPress={handleLogout} activeOpacity={0.7}>
-          <Ionicons name="log-out-outline" size={18} color={colors.logoutColor} />
-          <Text style={s.logoutText}>Log Out</Text>
-        </TouchableOpacity>
 
         <View style={{ height: 100 }} />
       </ScrollView>
@@ -200,7 +201,6 @@ export default function ProfileScreen({ onNavigateDiscover, onNavigateTickets, o
       <View style={s.bottomNav}>
         {[
           { label: 'Discover', icon: 'compass-outline', onPress: onNavigateDiscover },
-          { label: 'Tickets', icon: 'ticket-outline', onPress: onNavigateTickets },
           { label: 'Profile', icon: 'person-outline', onPress: null },
         ].map((tab) => {
           const active = tab.label === activeTab;
@@ -384,6 +384,16 @@ function makeStyles(colors) {
       fontWeight: '600',
       color: colors.bookingMetaValue,
     },
+    bookedAtRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      marginBottom: 12,
+    },
+    bookedAtText: {
+      fontSize: 11,
+      color: colors.venueSubtext,
+    },
     ticketBtn: {
       backgroundColor: colors.INDIGO,
       borderRadius: 10,
@@ -534,6 +544,12 @@ function makeStyles(colors) {
     navLabel: {
       fontSize: 11,
       fontWeight: '500',
+    },
+    emptyText: {
+      textAlign: 'center',
+      color: colors.venueSubtext,
+      fontSize: 14,
+      marginBottom: 20,
     },
   });
 }

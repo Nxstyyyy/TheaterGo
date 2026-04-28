@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,74 +9,89 @@ import {
   Image,
   StyleSheet,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { authFetch } from '../utils/authFetch';
 import { useTheme } from '../context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.72;
 
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
 const CATEGORIES = ['All Productions', 'Musicals', 'Drama', 'Comedy', 'Opera'];
 
-const TRENDING = [
-  {
-    id: '1',
-    genre: 'MUSICAL',
-    title: 'The Midnight Chorus',
-    venue: 'Majestic Theater',
-    image: 'https://images.unsplash.com/photo-1507924538820-ede94a04019d?w=600&q=80',
-  },
-  {
-    id: '2',
-    genre: 'DRAMA',
-    title: 'Shattered Mirrors',
-    venue: 'Royal Stage',
-    image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80',
-  },
-  {
-    id: '3',
-    genre: 'COMEDY',
-    title: 'Last Laugh Club',
-    venue: 'The Forum',
-    image: 'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=600&q=80',
-  },
-];
+const GENRE_MAP = {
+  Musicals: 'Musical',
+  Drama: 'Drama',
+  Comedy: 'Comedy',
+  Opera: 'Opera',
+};
 
-const VENUES = [
-  {
-    id: '1',
-    name: 'The Grand Lyric',
-    rating: '4.9',
-    distance: '1.2 miles',
-    genre: 'Classic Musicals & Opera',
-    image: 'https://images.unsplash.com/photo-1503095396549-807759245b35?w=200&q=80',
-  },
-  {
-    id: '2',
-    name: 'Prism Contemporary',
-    rating: '4.7',
-    distance: '0.4 miles',
-    genre: 'Experimental & Indie',
-    image: 'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?w=200&q=80',
-  },
-  {
-    id: '3',
-    name: 'Black Box Studio',
-    rating: '4.8',
-    distance: '2.5 miles',
-    genre: 'Intimate Drama & Solo Acts',
-    image: 'https://images.unsplash.com/photo-1464375117522-1311d6a5b81f?w=200&q=80',
-  },
-];
-
-export default function DiscoverScreen({ onNavigateProfile }) {
+export default function DiscoverScreen({ onNavigateProfile, onNavigateVenue, onNavigateShow, onNavigateAllShows }) {
   const { colors, isDark } = useTheme();
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All Productions');
   const [activeTab, setActiveTab] = useState('Discover');
+  const [shows, setShows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const s = makeStyles(colors);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await authFetch(`${API_URL}/api/shows`);
+        if (!res) return;
+        if (!res.ok) throw new Error('Failed to fetch shows');
+        const data = await res.json();
+        setShows(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const filteredShows = shows.filter((item) => {
+    const matchesSearch =
+      search.trim() === '' ||
+      item.title.toLowerCase().includes(search.toLowerCase()) ||
+      item.venue_name?.toLowerCase().includes(search.toLowerCase());
+
+    const matchesCategory =
+      activeCategory === 'All Productions' ||
+      item.genre === GENRE_MAP[activeCategory];
+
+    return matchesSearch && matchesCategory;
+  });
+
+  const trendingShows = Object.values(
+    filteredShows
+      .filter((item) => item.is_trending)
+      .reduce((acc, item) => {
+        if (!acc[item.production_id]) acc[item.production_id] = item;
+        return acc;
+      }, {})
+  );
+
+  const venues = Object.values(
+    shows.reduce((acc, item) => {
+      if (item.venue_name && !acc[item.venue_name]) {
+        acc[item.venue_name] = {
+          name: item.venue_name,
+          city: item.city,
+          image_url: item.venue_image_url,
+        };
+      }
+      return acc;
+    }, {})
+  );
 
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
@@ -88,9 +103,6 @@ export default function DiscoverScreen({ onNavigateProfile }) {
           <MaterialCommunityIcons name="theater" size={22} color={colors.INDIGO} />
           <Text style={s.logoText}>Theater Go</Text>
         </View>
-        <TouchableOpacity>
-          <Ionicons name="search" size={22} color={colors.sectionTitle} />
-        </TouchableOpacity>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
@@ -129,56 +141,68 @@ export default function DiscoverScreen({ onNavigateProfile }) {
           })}
         </ScrollView>
 
-        {/* Trending Now */}
-        <View style={s.sectionHeader}>
-          <Text style={s.sectionTitle}>Trending Now</Text>
-          <TouchableOpacity style={s.seeAllRow}>
-            <Text style={s.seeAll}>See all</Text>
-            <Ionicons name="chevron-forward" size={14} color={colors.seeAllColor} />
-          </TouchableOpacity>
-        </View>
-
-        <FlatList
-          data={TRENDING}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={s.trendingList}
-          snapToInterval={CARD_WIDTH + 16}
-          decelerationRate="fast"
-          renderItem={({ item }) => (
-            <TouchableOpacity style={s.trendingCard} activeOpacity={0.9}>
-              <Image source={{ uri: item.image }} style={s.trendingImage} />
-              <View style={s.trendingOverlay}>
-                <Text style={s.trendingGenre}>{item.genre}</Text>
-                <Text style={s.trendingTitle}>{item.title}</Text>
-                <View style={s.trendingVenueRow}>
-                  <Ionicons name="location-outline" size={12} color="#fff" />
-                  <Text style={s.trendingVenue}>{item.venue}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
-
-        {/* Local Venues */}
-        <Text style={[s.sectionTitle, s.venuesSectionTitle]}>Local Venues</Text>
-        {VENUES.map((venue) => (
-          <TouchableOpacity key={venue.id} style={s.venueCard} activeOpacity={0.85}>
-            <Image source={{ uri: venue.image }} style={s.venueImage} />
-            <View style={s.venueInfo}>
-              <Text style={s.venueName}>{venue.name}</Text>
-              <View style={s.venueMetaRow}>
-                <Ionicons name="star" size={13} color={colors.starColor} />
-                <Text style={s.venueMeta}>{venue.rating}</Text>
-                <Text style={s.venueDot}>•</Text>
-                <Text style={s.venueMeta}>{venue.distance}</Text>
-              </View>
-              <Text style={s.venueGenre}>{venue.genre}</Text>
+        {loading ? (
+          <ActivityIndicator size="large" color={colors.INDIGO} style={{ marginTop: 40 }} />
+        ) : error ? (
+          <Text style={s.errorText}>{error}</Text>
+        ) : (
+          <>
+            {/* Trending Now */}
+            <View style={s.sectionHeader}>
+              <Text style={s.sectionTitle}>Trending Now</Text>
+              <TouchableOpacity style={s.seeAllRow} onPress={() => onNavigateAllShows?.()}>
+                <Text style={s.seeAll}>See all</Text>
+                <Ionicons name="chevron-forward" size={14} color={colors.seeAllColor} />
+              </TouchableOpacity>
             </View>
-            <Ionicons name="chevron-forward" size={18} color={colors.navInactive} />
-          </TouchableOpacity>
-        ))}
+
+            {trendingShows.length === 0 ? (
+              <Text style={s.emptyText}>No trending shows found.</Text>
+            ) : (
+              <FlatList
+                data={trendingShows}
+                keyExtractor={(item) => String(item.show_id)}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={s.trendingList}
+                snapToInterval={CARD_WIDTH + 16}
+                decelerationRate="fast"
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={s.trendingCard} activeOpacity={0.9} onPress={() => onNavigateShow?.(item)}>
+                    <Image source={{ uri: item.image_url }} style={s.trendingImage} />
+                    <View style={s.trendingOverlay}>
+                      <Text style={s.trendingGenre}>{item.genre?.toUpperCase()}</Text>
+                      <Text style={s.trendingTitle}>{item.title}</Text>
+                      <View style={s.trendingVenueRow}>
+                        <Ionicons name="location-outline" size={12} color="#fff" />
+                        <Text style={s.trendingVenue}>{item.venue_name}</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                )}
+              />
+            )}
+
+            {/* Local Venues */}
+            <Text style={[s.sectionTitle, s.venuesSectionTitle]}>Local Venues</Text>
+            {venues.length === 0 ? (
+              <Text style={s.emptyText}>No venues found.</Text>
+            ) : (
+              venues.map((venue) => (
+                <TouchableOpacity key={venue.name} style={s.venueCard} activeOpacity={0.85} onPress={() => onNavigateVenue?.(venue)}>
+                  {venue.image_url && (
+                    <Image source={{ uri: venue.image_url }} style={s.venueImage} />
+                  )}
+                  <View style={s.venueInfo}>
+                    <Text style={s.venueName}>{venue.name}</Text>
+                    <Text style={s.venueMeta}>{venue.city}</Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={18} color={colors.navInactive} />
+                </TouchableOpacity>
+              ))
+            )}
+          </>
+        )}
 
         <View style={{ height: 100 }} />
       </ScrollView>
@@ -192,7 +216,6 @@ export default function DiscoverScreen({ onNavigateProfile }) {
       <View style={s.bottomNav}>
         {[
           { label: 'Discover', icon: 'compass-outline', onPress: null },
-          { label: 'Tickets', icon: 'ticket-outline', onPress: null },
           { label: 'Profile', icon: 'person-outline', onPress: onNavigateProfile },
         ].map((tab) => {
           const active = tab.label === activeTab;
@@ -457,6 +480,20 @@ function makeStyles(colors) {
     navLabel: {
       fontSize: 11,
       fontWeight: '500',
+    },
+
+    // Feedback
+    errorText: {
+      textAlign: 'center',
+      marginTop: 40,
+      color: '#e74c3c',
+      fontSize: 14,
+    },
+    emptyText: {
+      textAlign: 'center',
+      color: colors.venueSubtext,
+      fontSize: 14,
+      marginBottom: 20,
     },
   });
 }
