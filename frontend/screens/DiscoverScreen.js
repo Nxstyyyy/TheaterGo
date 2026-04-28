@@ -40,6 +40,7 @@ export default function DiscoverScreen({ onNavigateProfile, onNavigateVenue, onN
   const [shows, setShows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showAllVenues, setShowAllVenues] = useState(false);
   const s = makeStyles(colors);
 
   useEffect(() => {
@@ -188,29 +189,31 @@ export default function DiscoverScreen({ onNavigateProfile, onNavigateVenue, onN
             {venues.length === 0 ? (
               <Text style={s.emptyText}>No venues found.</Text>
             ) : (
-              venues.map((venue) => (
-                <TouchableOpacity key={venue.name} style={s.venueCard} activeOpacity={0.85} onPress={() => onNavigateVenue?.(venue)}>
-                  {venue.image_url && (
-                    <Image source={{ uri: venue.image_url }} style={s.venueImage} />
-                  )}
-                  <View style={s.venueInfo}>
-                    <Text style={s.venueName}>{venue.name}</Text>
-                    <Text style={s.venueMeta}>{venue.city}</Text>
-                  </View>
-                  <Ionicons name="chevron-forward" size={18} color={colors.navInactive} />
-                </TouchableOpacity>
-              ))
+              <>
+                {(showAllVenues ? venues : venues.slice(0, 3)).map((venue) => (
+                  <TouchableOpacity key={venue.name} style={s.venueCard} activeOpacity={0.85} onPress={() => onNavigateVenue?.(venue)}>
+                    {venue.image_url && (
+                      <Image source={{ uri: venue.image_url }} style={s.venueImage} />
+                    )}
+                    <View style={s.venueInfo}>
+                      <Text style={s.venueName}>{venue.name}</Text>
+                      <Text style={s.venueMeta}>{venue.city}</Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={18} color={colors.navInactive} />
+                  </TouchableOpacity>
+                ))}
+                {venues.length > 3 && (
+                  <TouchableOpacity onPress={() => setShowAllVenues(!showAllVenues)} style={s.showMore}>
+                    <Text style={s.showMoreText}>{showAllVenues ? 'Show less' : 'Show more'}</Text>
+                  </TouchableOpacity>
+                )}
+              </>
             )}
           </>
         )}
 
         <View style={{ height: 100 }} />
       </ScrollView>
-
-      {/* FAB */}
-      <TouchableOpacity style={s.fab}>
-        <Ionicons name="options-outline" size={22} color="#fff" />
-      </TouchableOpacity>
 
       {/* Bottom Nav */}
       <View style={s.bottomNav}>
@@ -400,6 +403,16 @@ function makeStyles(colors) {
     venuesSectionTitle: {
       marginBottom: 14,
     },
+    showMore: {
+      alignItems: 'center',
+      paddingVertical: 12,
+      marginBottom: 4,
+    },
+    showMoreText: {
+      fontSize: 13,
+      color: colors.venueSubtext,
+      fontWeight: '500',
+    },
     venueCard: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -443,24 +456,6 @@ function makeStyles(colors) {
       fontSize: 12,
       color: colors.venueSubtext,
       fontStyle: 'italic',
-    },
-
-    // FAB
-    fab: {
-      position: 'absolute',
-      bottom: 80,
-      right: 20,
-      width: 52,
-      height: 52,
-      borderRadius: 26,
-      backgroundColor: colors.fabBg,
-      alignItems: 'center',
-      justifyContent: 'center',
-      elevation: 6,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 3 },
-      shadowOpacity: 0.2,
-      shadowRadius: 6,
     },
 
     // Bottom nav

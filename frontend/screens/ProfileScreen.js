@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   ActivityIndicator,
+  Switch,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -17,14 +18,17 @@ import { useTheme } from '../context/ThemeContext';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-export default function ProfileScreen({ onNavigateDiscover, onLogout }) {
-  const { colors } = useTheme();
+export default function ProfileScreen({ onNavigateDiscover, onLogout, onNavigateTicket, onNavigatePayment }) {
+  const { colors, isDark, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('Profile');
   const [showAllPast, setShowAllPast] = useState(false);
+  const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [upcoming, setUpcoming] = useState([]);
   const [past, setPast] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const scrollRef = useRef(null);
+  const upcomingSectionY = useRef(0);
   const s = makeStyles(colors);
 
   useEffect(() => {
@@ -41,7 +45,14 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout }) {
           authFetch(`${API_URL}/api/bookings/past`),
         ]);
 
-        if (upRes?.ok) setUpcoming(await upRes.json());
+        if (upRes?.ok) {
+          const upData = await upRes.json();
+          const sorted = [...upData].sort((a, b) =>
+            a.status === 'pending' && b.status !== 'pending' ? -1 :
+            a.status !== 'pending' && b.status === 'pending' ? 1 : 0
+          );
+          setUpcoming(sorted);
+        }
         if (pastRes?.ok) setPast(await pastRes.json());
       } catch (err) {
         console.error('Error fetching bookings:', err.message);
@@ -52,6 +63,8 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout }) {
   }, []);
 
   const visiblePast = showAllPast ? past : past.slice(0, 3);
+  const visibleUpcoming = showAllUpcoming ? upcoming : upcoming.slice(0, 3);
+  const pendingCount = upcoming.filter(b => b.status === 'pending').length;
 
   const formatDate = (dateStr) =>
     new Date(dateStr).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -87,16 +100,14 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout }) {
         </TouchableOpacity>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
+      <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
         {/* Avatar */}
         <View style={s.avatarWrapper}>
           <Image
             source={{ uri: `https://api.dicebear.com/7.x/adventurer/png?seed=${user?.name ?? 'User'}` }}
             style={s.avatar}
           />
-          <View style={s.avatarBadge}>
-            <Ionicons name="pencil" size={11} color="#fff" />
-          </View>
+
         </View>
         <Text style={s.userName}>{user?.name ?? '—'}</Text>
         <Text style={s.userSince}>{user?.email ?? ''}</Text>
@@ -105,22 +116,49 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout }) {
           <ActivityIndicator size="large" color={colors.INDIGO} style={{ marginTop: 40 }} />
         ) : (
           <>
+            {/* Pending notification banner */}
+            {pendingCount > 0 && (
+              <TouchableOpacity
+                style={s.pendingBanner}
+                activeOpacity={0.85}
+                onPress={() =>
+                scrollRef.current?.scrollTo({ y: upcomingSectionY.current, animated: true })
+              }
+              >
+                <Ionicons name="alert-circle" size={18} color="#fff" style={{ marginRight: 8 }} />
+                <Text style={s.pendingBannerText}>
+                  {pendingCount === 1
+                    ? 'You have 1 pending booking — complete your payment.'
+                    : `You have ${pendingCount} pending bookings — complete your payments.`}
+                </Text>
+              </TouchableOpacity>
+            )}
             {/* Upcoming Bookings */}
-            <View style={s.sectionHeader}>
+            <View
+              style={s.sectionHeader}
+              onLayout={(e) => { upcomingSectionY.current = e.nativeEvent.layout.y; }}
+            >
               <Text style={s.sectionTitle}>Upcoming Bookings</Text>
             </View>
 
             {upcoming.length === 0 ? (
               <Text style={s.emptyText}>No upcoming bookings.</Text>
             ) : (
-              upcoming.map((item) => (
+              <>
+              {visibleUpcoming.map((item) => (
                 <View key={item.booking_id} style={s.bookingCard}>
                   <Image source={{ uri: item.image_url }} style={s.bookingImage} />
-                  {item.status === 'confirmed' && (
-                    <View style={s.badge}>
-                      <Text style={s.badgeText}>CONFIRMED</Text>
-                    </View>
-                  )}
+                  {(() => {
+                    const badgeColor =
+                      item.status === 'confirmed' ? colors.confirmedBadgeBg :
+                      item.status === 'pending'   ? '#F97316' :
+                      item.status === 'cancelled' ? '#EF4444' : null;
+                    return badgeColor ? (
+                      <View style={[s.badge, { backgroundColor: badgeColor }]}>
+                        <Text style={s.badgeText}>{item.status.toUpperCase()}</Text>
+                      </View>
+                    ) : null;
+                  })()}
                   <View style={s.bookingBody}>
                     <Text style={s.bookingTitle}>{item.title}</Text>
                     <View style={s.bookingVenueRow}>
@@ -143,17 +181,32 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout }) {
                       </View>
                     </View>
 
-                    <TouchableOpacity
-                      style={[s.ticketBtn, item.status !== 'confirmed' && s.ticketBtnOutline]}
-                      activeOpacity={0.85}
-                    >
-                      <Text style={[s.ticketBtnText, item.status !== 'confirmed' && s.ticketBtnTextOutline]}>
-                        View Ticket
-                      </Text>
-                    </TouchableOpacity>
+                    {item.status === 'pending' ? (
+                      <TouchableOpacity
+                        style={s.payBtn}
+                        activeOpacity={0.85}
+                        onPress={() => onNavigatePayment?.(item)}
+                      >
+                        <Text style={s.payBtnText}>Complete Payment</Text>
+                      </TouchableOpacity>
+                    ) : item.status === 'confirmed' ? (
+                      <TouchableOpacity
+                        style={s.ticketBtn}
+                        activeOpacity={0.85}
+                        onPress={() => onNavigateTicket?.(item)}
+                      >
+                        <Text style={s.ticketBtnText}>View Ticket</Text>
+                      </TouchableOpacity>
+                    ) : null}
                   </View>
                 </View>
-              ))
+              ))}
+              {upcoming.length > 3 && (
+                <TouchableOpacity onPress={() => setShowAllUpcoming(!showAllUpcoming)} style={s.showMore}>
+                  <Text style={s.showMoreText}>{showAllUpcoming ? 'Show less' : 'Show more'}</Text>
+                </TouchableOpacity>
+              )}
+              </>
             )}
 
             {/* Past Bookings */}
@@ -193,6 +246,27 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout }) {
         )}
 
         {/* Account Settings */}
+        <View style={s.settingsSectionTitle}>
+          <Text style={s.sectionTitle}>Settings</Text>
+        </View>
+        <View style={s.settingsList}>
+          <View style={s.settingsRow}>
+            <View style={s.settingsLeft}>
+              <Ionicons
+                name={isDark ? 'moon' : 'sunny'}
+                size={18}
+                color={colors.INDIGO}
+              />
+              <Text style={s.settingsLabel}>Dark Mode</Text>
+            </View>
+            <Switch
+              value={isDark}
+              onValueChange={toggleTheme}
+              trackColor={{ false: colors.inputBorder, true: colors.INDIGO }}
+              thumbColor="#fff"
+            />
+          </View>
+        </View>
 
         <View style={{ height: 100 }} />
       </ScrollView>
@@ -333,7 +407,6 @@ function makeStyles(colors) {
       position: 'absolute',
       top: 12,
       left: 12,
-      backgroundColor: colors.confirmedBadgeBg,
       paddingHorizontal: 10,
       paddingVertical: 4,
       borderRadius: 6,
@@ -413,6 +486,17 @@ function makeStyles(colors) {
     ticketBtnTextOutline: {
       color: colors.INDIGO,
     },
+    payBtn: {
+      backgroundColor: '#F97316',
+      borderRadius: 10,
+      paddingVertical: 12,
+      alignItems: 'center',
+    },
+    payBtnText: {
+      color: '#fff',
+      fontSize: 14,
+      fontWeight: '700',
+    },
 
     // Past bookings
     pastList: {
@@ -460,7 +544,7 @@ function makeStyles(colors) {
     pastPrice: {
       fontSize: 13,
       fontWeight: '700',
-      color: colors.sectionTitle,
+      color: '#10B981',
       marginBottom: 3,
     },
     pastVenue: {
@@ -479,8 +563,26 @@ function makeStyles(colors) {
       color: colors.venueSubtext,
       fontWeight: '500',
     },
-
+    pendingBanner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#F97316',
+      borderRadius: 12,
+      paddingVertical: 12,
+      paddingHorizontal: 14,
+      marginBottom: 16,
+    },
+    pendingBannerText: {
+      flex: 1,
+      color: '#fff',
+      fontSize: 13,
+      fontWeight: '600',
+      lineHeight: 18,
+    },
     // Settings
+    settingsSectionTitle: {
+      marginTop: 8,
+    },
     settingsList: {
       backgroundColor: colors.settingsRowBg,
       borderRadius: 14,

@@ -11,21 +11,19 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authFetch } from '../utils/authFetch';
 import { useTheme } from '../context/ThemeContext';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 const SEAT_PRICE = 45.0;
 
-export default function BookScreen({ show, onBack, onBookingSuccess }) {
+export default function BookScreen({ show, onBack, onBookingSuccess, onNavigatePayment }) {
   const { colors } = useTheme();
   const [seats, setSeats] = useState([]);
   const [selected, setSelected] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
-  const [confirmed, setConfirmed] = useState(null); // { booking_id, total_price }
   const [existingBookings, setExistingBookings] = useState([]);
   const s = makeStyles(colors);
 
@@ -89,7 +87,25 @@ export default function BookScreen({ show, onBack, onBookingSuccess }) {
       if (!res) return;
       const data = await res.json();
       if (!res.ok) throw new Error(data.message ?? 'Booking failed');
-      setConfirmed(data);
+
+      const seatLabels = seats
+        .filter((s) => selected.has(s.id))
+        .map((s) => `${s.row_label}${s.seat_number}`)
+        .join(', ');
+
+      onNavigatePayment?.({
+        booking_id:  data.booking_id,
+        total_price: data.total_price,
+        status:      'pending',
+        booked_at:   new Date().toISOString(),
+        show_date:   show.show_date,
+        show_time:   show.show_time,
+        title:       show.title,
+        image_url:   show.image_url,
+        venue_name:  show.venue_name,
+        city:        show.city ?? null,
+        seats:       seatLabels,
+      });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -108,61 +124,6 @@ export default function BookScreen({ show, onBack, onBookingSuccess }) {
     d.setHours(+h, +m);
     return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
   };
-
-  // ── Confirmation screen ──────────────────────────────────────────────────────
-  if (confirmed) {
-    const seatLabels = seats
-      .filter((s) => selected.has(s.id))
-      .map((s) => `${s.row_label}${s.seat_number}`)
-      .join(', ');
-
-    return (
-      <SafeAreaView style={s.safe} edges={['top']}>
-        <StatusBar style={colors.statusBar} />
-        <ScrollView contentContainerStyle={s.confirmScroll} showsVerticalScrollIndicator={false}>
-          <View style={s.confirmIcon}>
-            <Ionicons name="checkmark-circle" size={72} color="#22C55E" />
-          </View>
-          <Text style={s.confirmTitle}>Booking Confirmed!</Text>
-          <Text style={s.confirmSub}>Your tickets have been reserved.</Text>
-
-          <View style={s.ticket}>
-            <Image source={{ uri: show.image_url }} style={s.ticketImage} />
-            <View style={s.ticketBody}>
-              <Text style={s.ticketShow}>{show.title}</Text>
-              <View style={s.ticketRow}>
-                <Ionicons name="location-outline" size={13} color={colors.venueSubtext} />
-                <Text style={s.ticketMeta}>{show.venue_name}</Text>
-              </View>
-              <View style={s.ticketRow}>
-                <Ionicons name="calendar-outline" size={13} color={colors.venueSubtext} />
-                <Text style={s.ticketMeta}>{formatDate(show.show_date)}</Text>
-              </View>
-              <View style={s.ticketRow}>
-                <Ionicons name="time-outline" size={13} color={colors.venueSubtext} />
-                <Text style={s.ticketMeta}>{formatTime(show.show_time)}</Text>
-              </View>
-              <View style={s.ticketDivider} />
-              <View style={s.ticketRow}>
-                <Ionicons name="ticket-outline" size={13} color={colors.venueSubtext} />
-                <Text style={s.ticketMeta}>{seatLabels}</Text>
-              </View>
-              <View style={s.ticketRow}>
-                <Ionicons name="cash-outline" size={13} color={colors.venueSubtext} />
-                <Text style={[s.ticketMeta, { fontWeight: '700', color: colors.sectionTitle }]}>
-                  ${confirmed.total_price.toFixed(2)} total
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          <TouchableOpacity style={s.doneBtn} onPress={() => onBookingSuccess?.()} activeOpacity={0.88}>
-            <Text style={s.doneBtnText}>Back to Show</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </SafeAreaView>
-    );
-  }
 
   // ── Main booking screen ──────────────────────────────────────────────────────
   return (
@@ -565,7 +526,7 @@ function makeStyles(colors) {
     footerPrice: {
       fontSize: 22,
       fontWeight: '800',
-      color: colors.sectionTitle,
+      color: '#10B981',
     },
     footerPriceSub: {
       fontSize: 13,

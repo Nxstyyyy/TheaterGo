@@ -35,7 +35,7 @@ router.post('/', authenticate, async (req, res) => {
         const total_price = (seat_ids.length * SEAT_PRICE).toFixed(2);
 
         const result = await conn.query(
-            `INSERT INTO bookings (user_id, show_id, total_price, status) VALUES (?, ?, ?, 'confirmed')`,
+            `INSERT INTO bookings (user_id, show_id, total_price, status) VALUES (?, ?, ?, 'pending')`,
             [req.user.id, show_id, total_price]
         );
         const booking_id = Number(result.insertId);
@@ -49,7 +49,7 @@ router.post('/', authenticate, async (req, res) => {
         }
 
         await conn.commit();
-        res.status(201).json({ booking_id, total_price: Number(total_price), status: 'confirmed' });
+        res.status(201).json({ booking_id, total_price: Number(total_price), status: 'pending' });
     } catch (err) {
         await conn.rollback();
         console.error('Error creating booking:', err.message);
@@ -137,6 +137,37 @@ router.get('/past', authenticate, async (req, res) => {
         res.json(rows);
     } catch (err) {
         console.error('Error fetching past bookings:', err.message);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// PATCH /api/bookings/:id/confirm — confirm a pending booking (fake payment)
+router.patch('/:id/confirm', authenticate, async (req, res) => {
+    const bookingId = parseInt(req.params.id, 10);
+    if (!bookingId) return res.status(400).json({ message: 'Invalid booking id' });
+
+    try {
+        const rows = await db.query(
+            `SELECT id, user_id, status FROM bookings WHERE id = ?`,
+            [bookingId]
+        );
+
+        if (rows.length === 0) return res.status(404).json({ message: 'Booking not found' });
+
+        const booking = rows[0];
+        if (booking.user_id !== req.user.id)
+            return res.status(403).json({ message: 'Forbidden' });
+        if (booking.status !== 'pending')
+            return res.status(409).json({ message: 'Booking is not pending' });
+
+        await db.query(
+            `UPDATE bookings SET status = 'confirmed' WHERE id = ?`,
+            [bookingId]
+        );
+
+        res.json({ message: 'Booking confirmed', booking_id: bookingId, status: 'confirmed' });
+    } catch (err) {
+        console.error('Error confirming booking:', err.message);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
