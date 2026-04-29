@@ -45,3 +45,4 @@ backend/database/queries.sql
 backend/database/seed.sql
 secret.txt
 frontend/eas.json
+test.py
