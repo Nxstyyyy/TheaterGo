@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import {
   Text,
   View,
+  Image,
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
@@ -64,7 +65,7 @@ export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) 
           {/* Top logo bar */}
           <View style={styles.logoBar}>
             <View style={styles.logoIconWrapper}>
-              <MaterialCommunityIcons name="ticket-outline" size={20} color="#fff" />
+              <Image source={require('../assets/icon.png')} style={styles.logoIconImg} />
             </View>
             <Text style={styles.logoText}>TheaterGo</Text>
             <TouchableOpacity onPress={toggleTheme} style={styles.themeToggle}>
@@ -176,10 +177,14 @@ function makeStyles(colors) {
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: colors.INDIGO,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 8,
+  },
+  logoIconImg: {
+    width: 64,
+    height: 64,
+    resizeMode: 'contain',
   },
   logoText: {
     fontSize: 18,

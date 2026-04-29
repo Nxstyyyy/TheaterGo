@@ -43,3 +43,5 @@ yarn-error.*
 backend/database/schema.sql
 backend/database/queries.sql
 backend/database/seed.sql
+secret.txt
+frontend/eas.json

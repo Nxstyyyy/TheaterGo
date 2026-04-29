@@ -101,7 +101,7 @@ export default function DiscoverScreen({ onNavigateProfile, onNavigateVenue, onN
       {/* Header */}
       <View style={s.header}>
         <View style={s.logoRow}>
-          <MaterialCommunityIcons name="theater" size={22} color={colors.INDIGO} />
+          <Image source={require('../assets/icon.png')} style={s.logoIcon} />
           <Text style={s.logoText}>Theater Go</Text>
         </View>
       </View>
@@ -259,13 +259,17 @@ function makeStyles(colors) {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingHorizontal: 20,
+      paddingHorizontal: 8,
       paddingVertical: 14,
     },
     logoRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 6,
+    },
+    logoIcon: {
+      width: 64,
+      height: 64,
+      resizeMode: 'contain',
     },
     logoText: {
       fontSize: 20,
