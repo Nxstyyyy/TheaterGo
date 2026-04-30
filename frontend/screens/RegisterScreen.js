@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -29,12 +30,12 @@ export default function RegisterScreen({ onNavigateLogin, onNavigateDiscover }) 
 
   const handleSignUp = async () => {
     if (!fullName || !email || !password || !confirmPassword) {
-      alert('Please fill in all fields');
+      Alert.alert('Missing Information', 'Please fill in all fields');
       return;
     }
 
     if (password !== confirmPassword) {
-      alert('Passwords do not match');
+      Alert.alert('Password Mismatch', 'Passwords do not match');
       return;
     }
 
@@ -49,14 +50,14 @@ export default function RegisterScreen({ onNavigateLogin, onNavigateDiscover }) 
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.message || 'Registration failed');
+        Alert.alert('Registration Failed', data.message || 'Registration failed');
         return;
       }
 
       await AsyncStorage.setItem('token', data.token);
       onNavigateDiscover();
     } catch (err) {
-      alert('Could not connect to server');
+      Alert.alert('Connection Error', 'Could not connect to server');
       console.error(err);
     } finally {
       setIsLoading(false);

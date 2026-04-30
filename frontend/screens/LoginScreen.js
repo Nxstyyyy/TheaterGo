@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -26,7 +27,8 @@ export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) 
 
   const handleSignIn = async () => {
     if (!email || !password) {
-      alert('Please enter both email and password');
+      // alert('Please enter both email and password');
+      Alert.alert('Missing Information', 'Please enter both email and password');
       return;
     }
 
@@ -40,14 +42,14 @@ export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) 
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.message || 'Login failed');
+        Alert.alert('Login Failed', data.message || 'Login failed');
         return;
       }
 
       await AsyncStorage.setItem('token', data.token);
       onNavigateDiscover();
     } catch (err) {
-      alert('Could not connect to server');
+      Alert.alert('Connection Error', 'Could not connect to server');
       console.error(err);
     } finally {
       setIsLoading(false);
