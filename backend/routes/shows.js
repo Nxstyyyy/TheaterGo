@@ -6,29 +6,30 @@ router.get('/', authenticate, async (req, res) => {
     try {
         const shows = await db.query(`
             SELECT
-                sh.id            AS show_id,
+                sh.id AS show_id,
                 sh.show_date,
                 sh.show_time,
-                p.id             AS production_id,
+                p.id AS production_id,
                 p.title,
                 p.genre,
                 p.image_url,
                 p.is_trending,
-                v.name           AS venue_name,
+                v.name AS venue_name,
                 v.city,
-                v.image_url      AS venue_image_url,
+                v.image_url AS venue_image_url,
                 CAST((
                     SELECT COUNT(*)
                     FROM seats s2
                     WHERE s2.show_id = sh.id
-                      AND s2.id NOT IN (
-                          SELECT bs2.seat_id
-                          FROM booking_seats bs2
-                          JOIN bookings b2 ON b2.id = bs2.booking_id
-                          WHERE b2.show_id = sh.id
+                    AND s2.id NOT IN (
+                        SELECT bs2.seat_id
+                        FROM booking_seats bs2
+                        JOIN bookings b2 ON b2.id = bs2.booking_id
+                        WHERE b2.show_id = sh.id
                             AND b2.status IN ('confirmed', 'pending')
-                      )
-                ) AS UNSIGNED) AS available_seats
+                    )
+                ) AS UNSIGNED) AS available_seats,
+                sh.price_per_seat AS price
             FROM   shows sh
             JOIN   productions p ON p.id = sh.production_id
             LEFT JOIN venues   v ON v.id = p.venue_id
