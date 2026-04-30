@@ -46,3 +46,4 @@ backend/database/seed.sql
 secret.txt
 frontend/eas.json
 test.py
+run doctor.bat

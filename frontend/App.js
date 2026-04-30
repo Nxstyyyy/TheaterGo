@@ -119,6 +119,7 @@ function Navigator() {
       {__DEV__ && screen !== null && (
         <View style={[devStyles.banner, { backgroundColor: isDark ? 'rgba(0,0,0,0.82)' : 'rgba(255,255,255,0.92)' }]} pointerEvents="none">
           <Text style={[devStyles.text, { color: isDark ? '#00ff88' : '#1a1a1a' }]}>Screen: {screen}</Text>
+          <Text style={[devStyles.text, { color: isDark ? '#00ff88' : '#1a1a1a' }]}>Debug Mode Enabled</Text>
           <Text style={[devStyles.text, { color: isDark ? '#00ff88' : '#1a1a1a' }]}>API: {API_URL}</Text>
         </View>
       )}
