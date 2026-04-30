@@ -26,7 +26,7 @@ export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) 
 
   const handleSignIn = async () => {
     if (!email || !password) {
-      Alert('Please enter both email and password');
+      alert('Please enter both email and password');
       return;
     }
 
@@ -151,151 +151,151 @@ export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) 
 
 function makeStyles(colors) {
   return {
-    safe: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    keyboardView: {
-      flex: 1,
-    },
-    scroll: {
-      flexGrow: 1,
-      alignItems: 'center',
-      paddingVertical: 40,
-      paddingHorizontal: 20,
-    },
+  safe: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  scroll: {
+    flexGrow: 1,
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
 
-    // Logo bar
-    logoBar: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      alignSelf: 'flex-start',
-      marginBottom: 32,
-      marginLeft: 4,
-    },
-    logoIconWrapper: {
-      width: 32,
-      height: 32,
-      borderRadius: 8,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginRight: 8,
-    },
-    logoIconImg: {
-      width: 64,
-      height: 64,
-      resizeMode: 'contain',
-    },
-    logoText: {
-      fontSize: 18,
-      fontWeight: '700',
-      color: colors.logoText,
-      flex: 1,
-    },
-    themeToggle: {
-      padding: 4,
-    },
+  // Logo bar
+  logoBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    marginBottom: 32,
+    marginLeft: 4,
+  },
+  logoIconWrapper: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  logoIconImg: {
+    width: 64,
+    height: 64,
+    resizeMode: 'contain',
+  },
+  logoText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.logoText,
+    flex: 1,
+  },
+  themeToggle: {
+    padding: 4,
+  },
 
-    // Card
-    card: {
-      width: '100%',
-      backgroundColor: colors.card,
-      borderRadius: 20,
-      padding: 28,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.08,
-      shadowRadius: 16,
-      elevation: 5,
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: '800',
-      color: colors.title,
-      marginBottom: 6,
-      textAlign: 'center',
-    },
-    subtitle: {
-      fontSize: 13,
-      color: colors.subtitle,
-      textAlign: 'center',
-      marginBottom: 24,
-    },
+  // Card
+  card: {
+    width: '100%',
+    backgroundColor: colors.card,
+    borderRadius: 20,
+    padding: 28,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 5,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: colors.title,
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 13,
+    color: colors.subtitle,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
 
-    // Inputs
-    label: {
-      fontSize: 13,
-      fontWeight: '600',
-      color: colors.label,
-      marginBottom: 6,
-    },
-    inputWrapper: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      borderWidth: 1,
-      borderColor: colors.inputBorder,
-      borderRadius: 10,
-      backgroundColor: colors.inputBg,
-      paddingHorizontal: 12,
-      marginBottom: 18,
-    },
-    inputIcon: {
-      marginRight: 8,
-    },
-    input: {
-      flex: 1,
-      height: 46,
-      fontSize: 14,
-      color: colors.inputText,
-    },
-    eyeBtn: {
-      padding: 4,
-    },
-    passwordHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 6,
-    },
-    forgotText: {
-      fontSize: 13,
-      fontWeight: '500',
-      color: colors.INDIGO,
-    },
+  // Inputs
+  label: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.label,
+    marginBottom: 6,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.inputBorder,
+    borderRadius: 10,
+    backgroundColor: colors.inputBg,
+    paddingHorizontal: 12,
+    marginBottom: 18,
+  },
+  inputIcon: {
+    marginRight: 8,
+  },
+  input: {
+    flex: 1,
+    height: 46,
+    fontSize: 14,
+    color: colors.inputText,
+  },
+  eyeBtn: {
+    padding: 4,
+  },
+  passwordHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  forgotText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.INDIGO,
+  },
 
-    // Sign In button
-    signInBtn: {
-      backgroundColor: colors.INDIGO,
-      borderRadius: 12,
-      paddingVertical: 14,
-      alignItems: 'center',
-      marginTop: 4,
-      marginBottom: 20,
-    },
-    signInBtnDisabled: {
-      opacity: 0.6,
-    },
-    signInText: {
-      color: '#fff',
-      fontSize: 15,
-      fontWeight: '700',
-      letterSpacing: 0.3,
-    },
+  // Sign In button
+  signInBtn: {
+    backgroundColor: colors.INDIGO,
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 4,
+    marginBottom: 20,
+  },
+  signInBtnDisabled: {
+    opacity: 0.6,
+  },
+  signInText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
 
-    // Footer
-    footerRow: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    footerText: {
-      fontSize: 13,
-      color: colors.footerText,
-    },
-    footerLink: {
-      fontSize: 13,
-      fontWeight: '600',
-      color: colors.INDIGO,
-    },
+  // Footer
+  footerRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 13,
+    color: colors.footerText,
+  },
+  footerLink: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.INDIGO,
+  },
   };
 }
