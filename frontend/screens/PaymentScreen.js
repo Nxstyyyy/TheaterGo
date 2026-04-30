@@ -21,9 +21,9 @@ export default function PaymentScreen({ booking, onBack, onPaymentSuccess }) {
   const displayImage = booking.image_url;
   const displayTitle = booking.title;
   const displayVenue = booking.venue_name;
-  const displayCity  = booking.city;
-  const displayDate  = booking.show_date;
-  const displayTime  = booking.show_time;
+  const displayCity = booking.city;
+  const displayDate = booking.show_date;
+  const displayTime = booking.show_time;
   const displaySeats = booking.seats ?? '—';
   const displayTotal = Number(booking.total_price);
   const { colors } = useTheme();

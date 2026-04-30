@@ -70,6 +70,7 @@ export default function AllShowsScreen({ onBack, onNavigateShow, onNavigateProfi
     })();
   }, []);
 
+  // Filtering and sorting for search, category, and sort options
   const filtered = shows
     .filter((item) => {
       const q = search.trim().toLowerCase();

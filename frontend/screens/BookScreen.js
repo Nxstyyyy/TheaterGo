@@ -94,17 +94,17 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
         .join(', ');
 
       onNavigatePayment?.({
-        booking_id:  data.booking_id,
+        booking_id: data.booking_id,
         total_price: data.total_price,
-        status:      'pending',
-        booked_at:   new Date().toISOString(),
-        show_date:   show.show_date,
-        show_time:   show.show_time,
-        title:       show.title,
-        image_url:   show.image_url,
-        venue_name:  show.venue_name,
-        city:        show.city ?? null,
-        seats:       seatLabels,
+        status: 'pending',
+        booked_at: new Date().toISOString(),
+        show_date: show.show_date,
+        show_time: show.show_time,
+        title: show.title,
+        image_url: show.image_url,
+        venue_name: show.venue_name,
+        city: show.city ?? null,
+        seats: seatLabels,
       });
     } catch (err) {
       setError(err.message);
@@ -275,12 +275,11 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
             <Text style={s.footerSeats}>
               {selected.size === 0
                 ? 'No seats selected'
-                : `${selected.size} seat${selected.size > 1 ? 's' : ''} · ${
-                    seats
-                      .filter((s) => selected.has(s.id))
-                      .map((s) => `${s.row_label}${s.seat_number}`)
-                      .join(', ')
-                  }`}
+                : `${selected.size} seat${selected.size > 1 ? 's' : ''} · ${seats
+                  .filter((s) => selected.has(s.id))
+                  .map((s) => `${s.row_label}${s.seat_number}`)
+                  .join(', ')
+                }`}
             </Text>
             <Text style={s.footerPrice}>
               ${totalPrice.toFixed(2)}

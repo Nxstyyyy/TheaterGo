@@ -47,6 +47,7 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout, onNavigate
 
         if (upRes?.ok) {
           const upData = await upRes.json();
+          // sort the upcoming bookings because we want to prioritize the pending on the top
           const sorted = [...upData].sort((a, b) =>
             a.status === 'pending' && b.status !== 'pending' ? -1 :
             a.status !== 'pending' && b.status === 'pending' ? 1 : 0
@@ -65,6 +66,7 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout, onNavigate
   const visiblePast = showAllPast ? past : past.slice(0, 3);
   const visibleUpcoming = showAllUpcoming ? upcoming : upcoming.slice(0, 3);
   const pendingCount = upcoming.filter(b => b.status === 'pending').length;
+  // the pending count is used to show a banner on the top of the screen to notify the user that they have pending bookings that need to be paid
 
   const formatDate = (dateStr) =>
     new Date(dateStr).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -103,6 +105,7 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout, onNavigate
       <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
         {/* Avatar */}
         <View style={s.avatarWrapper}>
+          {/* thanks to DiceBear for the avatar generation */}
           <Image
             source={{ uri: `https://api.dicebear.com/7.x/adventurer/png?seed=${user?.name ?? 'User'}` }}
             style={s.avatar}
