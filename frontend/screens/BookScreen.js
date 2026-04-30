@@ -15,6 +15,7 @@ import { authFetch } from '../utils/authFetch';
 import { useTheme } from '../context/ThemeContext';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
+const SEAT_PRICE = 45.0;
 
 export default function BookScreen({ show, onBack, onBookingSuccess, onNavigatePayment }) {
   const { colors } = useTheme();
@@ -71,9 +72,7 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
     });
   };
 
-  const totalPrice = selected.size * (seats[0]?.price || 45.00);
-
-  console.log(seats[0]?.price === undefined && 'Price missing');
+  const totalPrice = selected.size * SEAT_PRICE;
 
   const handleConfirm = async () => {
     if (selected.size === 0) return;
