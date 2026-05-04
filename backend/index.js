@@ -4,6 +4,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const path = require('path');
+const fs = require('fs');
 const db = require('./database');
 
 const authRoutes = require('./routes/auth');
@@ -22,8 +24,20 @@ app.use('/api/auth', authRoutes);
 app.use('/api/shows', showsRoutes);
 app.use('/api/bookings', bookingsRoutes);
 
-app.get('/health', (req, res) => {
+app.get('/', (req, res) => {
     res.json({ status: 'ok' });
+});
+
+const APK_PATH = path.resolve(
+    __dirname,
+    'files/TheaterGo.apk'
+);
+
+app.get('/download/app', (req, res) => {
+    if (!fs.existsSync(APK_PATH)) {
+        return res.status(404).json({ message: 'APK not found. Run the release build first.' });
+    }
+    res.download(APK_PATH, 'TheaterGo.apk');
 });
 
 app.listen(APP_PORT, () => {
