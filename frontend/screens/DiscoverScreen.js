@@ -101,7 +101,7 @@ export default function DiscoverScreen({ onNavigateProfile, onNavigateVenue, onN
       {/* Header */}
       <View style={s.header}>
         <View style={s.logoRow}>
-          <Image source={require('../assets/icon.png')} style={s.logoIcon} />
+          <Image source={require('../assets/icon_app.png')} style={s.logoIcon} />
           <Text style={s.logoText}>Theater Go</Text>
         </View>
       </View>

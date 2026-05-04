@@ -77,7 +77,7 @@ export default function RegisterScreen({ onNavigateLogin, onNavigateDiscover }) 
           {/* Top logo bar */}
           <View style={styles.logoBar}>
             <View style={styles.logoIconWrapper}>
-              <Image source={require('../assets/icon.png')} style={styles.logoIconImg} />
+              <Image source={require('../assets/icon_app.png')} style={styles.logoIconImg} />
             </View>
             <Text style={styles.logoText}>TheaterGo</Text>
             <TouchableOpacity onPress={toggleTheme} style={styles.themeToggle}>

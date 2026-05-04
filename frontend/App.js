@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, StatusBar } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import LoginScreen from './screens/LoginScreen';
@@ -42,6 +45,7 @@ function Navigator() {
     setLogoutHandler(() => setScreen('Login'));
     AsyncStorage.getItem('token').then((token) => {
       setScreen(token ? 'Discover' : 'Login');
+      SplashScreen.hideAsync();
     });
   }, []);
 
