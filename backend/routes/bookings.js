@@ -2,8 +2,6 @@ const router = require('express').Router();
 const db = require('../database');
 const { authenticate } = require('../middleware/auth');
 
-const SEAT_PRICE = 45.00;
-
 // POST /api/bookings — create a booking
 router.post('/', authenticate, async (req, res) => {
     const { show_id, seat_ids } = req.body;
@@ -32,7 +30,11 @@ router.post('/', authenticate, async (req, res) => {
             return res.status(409).json({ message: 'One or more selected seats are no longer available' });
         }
 
-        const total_price = (seat_ids.length * SEAT_PRICE).toFixed(2);
+        // get seat price from show
+        const showRows = await conn.query(`SELECT price_per_seat FROM shows WHERE id = ?`, [show_id]);
+        const seatPrice = showRows[0]?.price_per_seat || 0;
+
+        const total_price = (seat_ids.length * seatPrice).toFixed(2);
 
         const result = await conn.query(
             `INSERT INTO bookings (user_id, show_id, total_price, status) VALUES (?, ?, ?, 'pending')`,
