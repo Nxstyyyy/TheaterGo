@@ -21,7 +21,7 @@ import { useTheme } from '../context/ThemeContext';
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.72;
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+const API_URL = __DEV__ ? 'http://10.0.2.2:5000' : process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
 
 const CATEGORIES = ['All Productions', 'Musicals', 'Drama', 'Comedy', 'Opera'];
 

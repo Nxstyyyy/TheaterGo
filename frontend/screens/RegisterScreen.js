@@ -17,6 +17,8 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../context/ThemeContext';
 
+const API_URL = __DEV__ ? 'http://10.0.2.2:5000' : process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
+
 export default function RegisterScreen({ onNavigateLogin, onNavigateDiscover }) {
   const { colors, isDark, toggleTheme } = useTheme();
   const [fullName, setFullName] = useState('');
@@ -41,7 +43,7 @@ export default function RegisterScreen({ onNavigateLogin, onNavigateDiscover }) 
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/auth/register`, {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: fullName, email, password }),

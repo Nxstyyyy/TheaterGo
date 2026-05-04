@@ -15,7 +15,7 @@ import PaymentScreen from './screens/PaymentScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setLogoutHandler } from './utils/authFetch';
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+const API_URL = __DEV__ ? 'http://10.0.2.2:5000' : process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
 
 function Navigator() {
   const { isDark } = useTheme();

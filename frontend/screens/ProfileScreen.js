@@ -16,7 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authFetch } from '../utils/authFetch';
 import { useTheme } from '../context/ThemeContext';
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+const API_URL = __DEV__ ? 'http://10.0.2.2:5000' : process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
 
 export default function ProfileScreen({ onNavigateDiscover, onLogout, onNavigateTicket, onNavigatePayment }) {
   const { colors, isDark, toggleTheme } = useTheme();
@@ -50,7 +50,7 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout, onNavigate
           // sort the upcoming bookings because we want to prioritize the pending on the top
           const sorted = [...upData].sort((a, b) =>
             a.status === 'pending' && b.status !== 'pending' ? -1 :
-            a.status !== 'pending' && b.status === 'pending' ? 1 : 0
+              a.status !== 'pending' && b.status === 'pending' ? 1 : 0
           );
           setUpcoming(sorted);
         }
@@ -125,8 +125,8 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout, onNavigate
                 style={s.pendingBanner}
                 activeOpacity={0.85}
                 onPress={() =>
-                scrollRef.current?.scrollTo({ y: upcomingSectionY.current, animated: true })
-              }
+                  scrollRef.current?.scrollTo({ y: upcomingSectionY.current, animated: true })
+                }
               >
                 <Ionicons name="alert-circle" size={18} color="#fff" style={{ marginRight: 8 }} />
                 <Text style={s.pendingBannerText}>
@@ -148,67 +148,67 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout, onNavigate
               <Text style={s.emptyText}>No upcoming bookings.</Text>
             ) : (
               <>
-              {visibleUpcoming.map((item) => (
-                <View key={item.booking_id} style={s.bookingCard}>
-                  <Image source={{ uri: item.image_url }} style={s.bookingImage} />
-                  {(() => {
-                    const badgeColor =
-                      item.status === 'confirmed' ? colors.confirmedBadgeBg :
-                      item.status === 'pending'   ? '#F97316' :
-                      item.status === 'cancelled' ? '#EF4444' : null;
-                    return badgeColor ? (
-                      <View style={[s.badge, { backgroundColor: badgeColor }]}>
-                        <Text style={s.badgeText}>{item.status.toUpperCase()}</Text>
-                      </View>
-                    ) : null;
-                  })()}
-                  <View style={s.bookingBody}>
-                    <Text style={s.bookingTitle}>{item.title}</Text>
-                    <View style={s.bookingVenueRow}>
-                      <Ionicons name="location-outline" size={13} color={colors.venueSubtext} />
-                      <Text style={s.bookingVenue}>{item.venue_name}{item.city ? `, ${item.city}` : ''}</Text>
-                      
-                    </View>
-                                        <View style={s.bookedAtRow}>
-                      <Ionicons name="time-outline" size={12} color={colors.venueSubtext} />
-                      <Text style={s.bookedAtText}>Booked {formatDate(item.booked_at)}</Text>
-                    </View>
-                    <View style={s.metaRow}>
-                      <View style={s.metaBox}>
-                        <Text style={s.metaLabel}>Date & Time</Text>
-                        <Text style={s.metaValue}>{formatShowDate(item.show_date)} • {formatTime(item.show_time)}</Text>
-                      </View>
-                      <View style={s.metaBox}>
-                        <Text style={s.metaLabel}>Seats</Text>
-                        <Text style={s.metaValue}>{item.seats ?? '—'}</Text>
-                      </View>
-                    </View>
+                {visibleUpcoming.map((item) => (
+                  <View key={item.booking_id} style={s.bookingCard}>
+                    <Image source={{ uri: item.image_url }} style={s.bookingImage} />
+                    {(() => {
+                      const badgeColor =
+                        item.status === 'confirmed' ? colors.confirmedBadgeBg :
+                          item.status === 'pending' ? '#F97316' :
+                            item.status === 'cancelled' ? '#EF4444' : null;
+                      return badgeColor ? (
+                        <View style={[s.badge, { backgroundColor: badgeColor }]}>
+                          <Text style={s.badgeText}>{item.status.toUpperCase()}</Text>
+                        </View>
+                      ) : null;
+                    })()}
+                    <View style={s.bookingBody}>
+                      <Text style={s.bookingTitle}>{item.title}</Text>
+                      <View style={s.bookingVenueRow}>
+                        <Ionicons name="location-outline" size={13} color={colors.venueSubtext} />
+                        <Text style={s.bookingVenue}>{item.venue_name}{item.city ? `, ${item.city}` : ''}</Text>
 
-                    {item.status === 'pending' ? (
-                      <TouchableOpacity
-                        style={s.payBtn}
-                        activeOpacity={0.85}
-                        onPress={() => onNavigatePayment?.(item)}
-                      >
-                        <Text style={s.payBtnText}>Complete Payment</Text>
-                      </TouchableOpacity>
-                    ) : item.status === 'confirmed' ? (
-                      <TouchableOpacity
-                        style={s.ticketBtn}
-                        activeOpacity={0.85}
-                        onPress={() => onNavigateTicket?.(item)}
-                      >
-                        <Text style={s.ticketBtnText}>View Ticket</Text>
-                      </TouchableOpacity>
-                    ) : null}
+                      </View>
+                      <View style={s.bookedAtRow}>
+                        <Ionicons name="time-outline" size={12} color={colors.venueSubtext} />
+                        <Text style={s.bookedAtText}>Booked {formatDate(item.booked_at)}</Text>
+                      </View>
+                      <View style={s.metaRow}>
+                        <View style={s.metaBox}>
+                          <Text style={s.metaLabel}>Date & Time</Text>
+                          <Text style={s.metaValue}>{formatShowDate(item.show_date)} • {formatTime(item.show_time)}</Text>
+                        </View>
+                        <View style={s.metaBox}>
+                          <Text style={s.metaLabel}>Seats</Text>
+                          <Text style={s.metaValue}>{item.seats ?? '—'}</Text>
+                        </View>
+                      </View>
+
+                      {item.status === 'pending' ? (
+                        <TouchableOpacity
+                          style={s.payBtn}
+                          activeOpacity={0.85}
+                          onPress={() => onNavigatePayment?.(item)}
+                        >
+                          <Text style={s.payBtnText}>Complete Payment</Text>
+                        </TouchableOpacity>
+                      ) : item.status === 'confirmed' ? (
+                        <TouchableOpacity
+                          style={s.ticketBtn}
+                          activeOpacity={0.85}
+                          onPress={() => onNavigateTicket?.(item)}
+                        >
+                          <Text style={s.ticketBtnText}>View Ticket</Text>
+                        </TouchableOpacity>
+                      ) : null}
+                    </View>
                   </View>
-                </View>
-              ))}
-              {upcoming.length > 3 && (
-                <TouchableOpacity onPress={() => setShowAllUpcoming(!showAllUpcoming)} style={s.showMore}>
-                  <Text style={s.showMoreText}>{showAllUpcoming ? 'Show less' : 'Show more'}</Text>
-                </TouchableOpacity>
-              )}
+                ))}
+                {upcoming.length > 3 && (
+                  <TouchableOpacity onPress={() => setShowAllUpcoming(!showAllUpcoming)} style={s.showMore}>
+                    <Text style={s.showMoreText}>{showAllUpcoming ? 'Show less' : 'Show more'}</Text>
+                  </TouchableOpacity>
+                )}
               </>
             )}
 
