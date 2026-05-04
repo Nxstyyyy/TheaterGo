@@ -82,6 +82,27 @@ export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) 
             <Text style={styles.title}>Welcome Back</Text>
             <Text style={styles.subtitle}>Sign in to access your digital tickets</Text>
 
+            {/* Social buttons */}
+            <View style={styles.socialRow}>
+              <TouchableOpacity style={styles.socialBtn} activeOpacity={0.8}>
+                <MaterialCommunityIcons name="google" size={18} color={colors.socialIconColor} />
+                <Text style={styles.socialText}>Google</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.socialBtn} activeOpacity={0.8}>
+                <Ionicons name="logo-apple" size={18} color={colors.socialIconColor} />
+                <Text style={styles.socialText}>
+                  <Text style={styles.socialIOS}>iOS </Text>Apple
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Divider */}
+            <View style={styles.dividerRow}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>OR EMAIL</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
             {/* Email field */}
             <Text style={styles.label}>Email Address</Text>
             <View style={styles.inputWrapper}>
@@ -101,9 +122,6 @@ export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) 
             {/* Password field */}
             <View style={styles.passwordHeader}>
               <Text style={styles.label}>Password</Text>
-              <TouchableOpacity>
-                <Text style={styles.forgotText}>Forgot?</Text>
-              </TouchableOpacity>
             </View>
             <View style={styles.inputWrapper}>
               <Ionicons name="lock-closed-outline" size={18} color={colors.iconColor} style={styles.inputIcon} />
@@ -300,6 +318,51 @@ function makeStyles(colors) {
       fontSize: 13,
       fontWeight: '600',
       color: colors.INDIGO,
+    },
+    socialRow: {
+      flexDirection: 'row',
+      gap: 12,
+      marginBottom: 24,
+    },
+    socialBtn: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 6,
+      borderWidth: 1,
+      borderColor: colors.socialBorder,
+      borderRadius: 10,
+      paddingVertical: 10,
+      backgroundColor: colors.socialBg,
+    },
+    socialText: {
+      fontSize: 13,
+      fontWeight: '500',
+      color: colors.socialText,
+    },
+    socialIOS: {
+      fontSize: 10,
+      color: colors.subtitle,
+    },
+
+    // Divider
+    dividerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 24,
+    },
+    dividerLine: {
+      flex: 1,
+      height: 1,
+      backgroundColor: colors.dividerLine,
+    },
+    dividerText: {
+      marginHorizontal: 10,
+      fontSize: 11,
+      fontWeight: '600',
+      color: colors.dividerText,
+      letterSpacing: 1,
     },
   };
 }
