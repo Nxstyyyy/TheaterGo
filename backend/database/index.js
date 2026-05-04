@@ -1,7 +1,6 @@
 let pool;
 
 async function getPool() {
-    console.log("host is", process.env.DB_HOST, "user is", process.env.DB_USER, "password is", process.env.DB_PASSWORD, "database is", process.env.DB_NAME);
     if (!pool) {
         const { createPool } = await import('mariadb');
         pool = createPool({

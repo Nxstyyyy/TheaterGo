@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Switch,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -31,36 +32,38 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout, onNavigate
   const upcomingSectionY = useRef(0);
   const s = makeStyles(colors);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const token = await AsyncStorage.getItem('token');
-        if (token) {
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          setUser(payload);
-        }
-
-        const [upRes, pastRes] = await Promise.all([
-          authFetch(`${API_URL}/api/bookings/upcoming`),
-          authFetch(`${API_URL}/api/bookings/past`),
-        ]);
-
-        if (upRes?.ok) {
-          const upData = await upRes.json();
-          // sort the upcoming bookings because we want to prioritize the pending on the top
-          const sorted = [...upData].sort((a, b) =>
-            a.status === 'pending' && b.status !== 'pending' ? -1 :
-              a.status !== 'pending' && b.status === 'pending' ? 1 : 0
-          );
-          setUpcoming(sorted);
-        }
-        if (pastRes?.ok) setPast(await pastRes.json());
-      } catch (err) {
-        console.error('Error fetching bookings:', err.message);
-      } finally {
-        setLoading(false);
+  const fetchBookings = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setUser(payload);
       }
-    })();
+
+      const [upRes, pastRes] = await Promise.all([
+        authFetch(`${API_URL}/api/bookings/upcoming`),
+        authFetch(`${API_URL}/api/bookings/past`),
+      ]);
+
+      if (upRes?.ok) {
+        const upData = await upRes.json();
+        // sort the upcoming bookings because we want to prioritize the pending on the top
+        const sorted = [...upData].sort((a, b) =>
+          a.status === 'pending' && b.status !== 'pending' ? -1 :
+            a.status !== 'pending' && b.status === 'pending' ? 1 : 0
+        );
+        setUpcoming(sorted);
+      }
+      if (pastRes?.ok) setPast(await pastRes.json());
+    } catch (err) {
+      console.error('Error fetching bookings:', err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBookings();
   }, []);
 
   const visiblePast = showAllPast ? past : past.slice(0, 3);
@@ -84,6 +87,35 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout, onNavigate
   const handleLogout = async () => {
     await AsyncStorage.removeItem('token');
     onLogout?.();
+  };
+
+  const handleCancelBooking = (bookingId) => {
+    Alert.alert(
+      'Cancel Booking',
+      'Are you sure you want to cancel this booking?',
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes, Cancel',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const res = await authFetch(`${API_URL}/api/bookings/${bookingId}/cancel`, {
+                method: 'PATCH',
+              });
+              if (res?.ok) {
+                await fetchBookings();
+              } else {
+                Alert.alert('Error', 'Could not cancel the booking. Please try again.');
+              }
+            } catch (err) {
+              console.error('Error cancelling booking:', err.message);
+              Alert.alert('Error', 'Something went wrong. Please try again.');
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -185,13 +217,22 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout, onNavigate
                       </View>
 
                       {item.status === 'pending' ? (
-                        <TouchableOpacity
-                          style={s.payBtn}
-                          activeOpacity={0.85}
-                          onPress={() => onNavigatePayment?.(item)}
-                        >
-                          <Text style={s.payBtnText}>Complete Payment</Text>
-                        </TouchableOpacity>
+                        <View style={s.pendingActions}>
+                          <TouchableOpacity
+                            style={[s.payBtn, { flex: 1 }]}
+                            activeOpacity={0.85}
+                            onPress={() => onNavigatePayment?.(item)}
+                          >
+                            <Text style={s.payBtnText}>Complete Payment</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={s.cancelBtn}
+                            activeOpacity={0.85}
+                            onPress={() => handleCancelBooking(item.booking_id)}
+                          >
+                            <Text style={s.cancelBtnText}>Cancel</Text>
+                          </TouchableOpacity>
+                        </View>
                       ) : item.status === 'confirmed' ? (
                         <TouchableOpacity
                           style={s.ticketBtn}
@@ -493,6 +534,10 @@ function makeStyles(colors) {
     ticketBtnTextOutline: {
       color: colors.INDIGO,
     },
+    pendingActions: {
+      flexDirection: 'row',
+      gap: 8,
+    },
     payBtn: {
       backgroundColor: '#F97316',
       borderRadius: 10,
@@ -500,6 +545,20 @@ function makeStyles(colors) {
       alignItems: 'center',
     },
     payBtnText: {
+      color: '#fff',
+      fontSize: 14,
+      fontWeight: '700',
+    },
+    cancelBtn: {
+      borderRadius: 10,
+      paddingVertical: 12,
+      paddingHorizontal: 18,
+      alignItems: 'center',
+      borderWidth: 1.5,
+      backgroundColor: '#EF4444',
+      borderColor: '#EF4444',
+    },
+    cancelBtnText: {
       color: '#fff',
       fontSize: 14,
       fontWeight: '700',
