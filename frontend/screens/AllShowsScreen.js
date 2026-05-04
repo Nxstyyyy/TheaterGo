@@ -416,7 +416,7 @@ function makeStyles(colors) {
     },
     cardImage: {
       width: 90,
-      height: 110,
+      alignSelf: 'stretch',
     },
     cardBody: {
       flex: 1,

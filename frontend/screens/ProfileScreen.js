@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 import { authFetch } from '../utils/authFetch';
 import { useTheme } from '../context/ThemeContext';
 
@@ -247,7 +248,8 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout, onNavigate
                 ))}
                 {upcoming.length > 3 && (
                   <TouchableOpacity onPress={() => setShowAllUpcoming(!showAllUpcoming)} style={s.showMore}>
-                    <Text style={s.showMoreText}>{showAllUpcoming ? 'Show less' : 'Show more'}</Text>
+                    <Text style={s.showMoreText}>{showAllUpcoming ? 'Show less' : `Show ${upcoming.length - 3} more`}</Text>
+                    <Ionicons name={showAllUpcoming ? 'chevron-up' : 'chevron-down'} size={14} color={colors.INDIGO} />
                   </TouchableOpacity>
                 )}
               </>
@@ -281,7 +283,8 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout, onNavigate
 
                 {past.length > 3 && (
                   <TouchableOpacity onPress={() => setShowAllPast(!showAllPast)} style={s.showMore}>
-                    <Text style={s.showMoreText}>{showAllPast ? 'Show less' : 'Show more'}</Text>
+                    <Text style={s.showMoreText}>{showAllPast ? 'Show less' : `Show ${past.length - 3} more`}</Text>
+                    <Ionicons name={showAllPast ? 'chevron-up' : 'chevron-down'} size={14} color={colors.INDIGO} />
                   </TouchableOpacity>
                 )}
               </>
@@ -310,6 +313,15 @@ export default function ProfileScreen({ onNavigateDiscover, onLogout, onNavigate
               thumbColor="#fff"
             />
           </View>
+        </View>
+
+        <View style={s.versionWrapper}>
+          <View style={s.versionDivider} />
+          <View style={s.versionBadge}>
+            <Ionicons name="layers-outline" size={12} color={colors.venueSubtext} />
+            <Text style={s.versionText}>App Version {Constants.expoConfig?.version ?? '—'}</Text>
+          </View>
+          <View style={s.versionDivider} />
         </View>
 
         <View style={{ height: 100 }} />
@@ -620,14 +632,17 @@ function makeStyles(colors) {
       maxWidth: 90,
     },
     showMore: {
+      flexDirection: 'row',
       alignItems: 'center',
-      paddingVertical: 12,
+      justifyContent: 'center',
+      gap: 4,
+      paddingVertical: 8,
       marginBottom: 4,
     },
     showMoreText: {
       fontSize: 13,
-      color: colors.venueSubtext,
-      fontWeight: '500',
+      fontWeight: '600',
+      color: colors.INDIGO,
     },
     pendingBanner: {
       flexDirection: 'row',
@@ -693,6 +708,38 @@ function makeStyles(colors) {
       fontSize: 14,
       fontWeight: '600',
       color: colors.logoutColor,
+    },
+
+    // Version
+    versionWrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 32,
+      marginHorizontal: 20,
+      gap: 10,
+    },
+    versionDivider: {
+      flex: 1,
+      height: 1,
+      backgroundColor: colors.venueBorder,
+      opacity: 0.6,
+    },
+    versionBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 5,
+      paddingHorizontal: 12,
+      paddingVertical: 5,
+      borderRadius: 999,
+      borderWidth: 1,
+      borderColor: colors.venueBorder,
+      backgroundColor: colors.venueBg,
+    },
+    versionText: {
+      fontSize: 11,
+      fontWeight: '600',
+      color: colors.venueSubtext,
+      letterSpacing: 0.3,
     },
 
     // Bottom nav

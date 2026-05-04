@@ -63,11 +63,15 @@ router.get('/:show_id/seats', authenticate, async (req, res) => {
                 s.id,
                 s.row_label,
                 s.seat_number,
-                CASE WHEN bs.seat_id IS NOT NULL THEN 1 ELSE 0 END AS is_booked
+                CASE WHEN EXISTS (
+                    SELECT 1
+                    FROM booking_seats bs
+                    JOIN bookings b ON b.id = bs.booking_id
+                    WHERE bs.seat_id = s.id
+                      AND b.show_id = s.show_id
+                      AND b.status IN ('confirmed', 'pending')
+                ) THEN 1 ELSE 0 END AS is_booked
             FROM seats s
-            LEFT JOIN booking_seats bs ON bs.seat_id = s.id
-            LEFT JOIN bookings b ON b.id = bs.booking_id
-                AND b.status IN ('confirmed', 'pending')
             WHERE s.show_id = ?
             ORDER BY s.row_label, s.seat_number
         `, [req.params.show_id]);

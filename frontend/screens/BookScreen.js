@@ -24,6 +24,7 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [existingBookings, setExistingBookings] = useState([]);
+  const [showAllBookings, setShowAllBookings] = useState(false);
   const s = makeStyles(colors);
 
   useEffect(() => {
@@ -165,12 +166,12 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
             <Text style={s.existingSectionTitle}>
               Your booking{existingBookings.length > 1 ? 's' : ''} for this show
             </Text>
-            {existingBookings.map((booking, index) => (
+            {(showAllBookings ? existingBookings : existingBookings.slice(0, 2)).map((booking, index, arr) => (
               <View
                 key={booking.booking_id}
                 style={[
                   s.existingBanner,
-                  index < existingBookings.length - 1 && s.existingBannerGap,
+                  index < arr.length - 1 && s.existingBannerGap,
                 ]}
               >
                 <View style={s.existingBannerLeft}>
@@ -192,6 +193,24 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
                 </View>
               </View>
             ))}
+            {existingBookings.length >= 3 && (
+              <TouchableOpacity
+                onPress={() => setShowAllBookings((v) => !v)}
+                style={s.showMoreBtn}
+                activeOpacity={0.7}
+              >
+                <Text style={s.showMoreText}>
+                  {showAllBookings
+                    ? 'Show less'
+                    : `Show ${existingBookings.length - 2} more`}
+                </Text>
+                <Ionicons
+                  name={showAllBookings ? 'chevron-up' : 'chevron-down'}
+                  size={14}
+                  color={colors.INDIGO}
+                />
+              </TouchableOpacity>
+            )}
           </View>
         )}
 
@@ -390,6 +409,18 @@ function makeStyles(colors) {
     },
     existingStatusTextConfirmed: {
       color: '#22C55E',
+    },
+    showMoreBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 4,
+      paddingVertical: 8,
+    },
+    showMoreText: {
+      fontSize: 13,
+      fontWeight: '600',
+      color: colors.INDIGO,
     },
 
     // Show summary

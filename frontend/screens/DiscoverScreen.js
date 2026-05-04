@@ -204,7 +204,8 @@ export default function DiscoverScreen({ onNavigateProfile, onNavigateVenue, onN
                 ))}
                 {venues.length > 3 && (
                   <TouchableOpacity onPress={() => setShowAllVenues(!showAllVenues)} style={s.showMore}>
-                    <Text style={s.showMoreText}>{showAllVenues ? 'Show less' : 'Show more'}</Text>
+                    <Text style={s.showMoreText}>{showAllVenues ? 'Show less' : `Show ${venues.length - 3} more`}</Text>
+                    <Ionicons name={showAllVenues ? 'chevron-up' : 'chevron-down'} size={14} color={colors.INDIGO} />
                   </TouchableOpacity>
                 )}
               </>
@@ -408,14 +409,17 @@ function makeStyles(colors) {
       marginBottom: 14,
     },
     showMore: {
+      flexDirection: 'row',
       alignItems: 'center',
-      paddingVertical: 12,
+      justifyContent: 'center',
+      gap: 4,
+      paddingVertical: 8,
       marginBottom: 4,
     },
     showMoreText: {
       fontSize: 13,
-      color: colors.venueSubtext,
-      fontWeight: '500',
+      fontWeight: '600',
+      color: colors.INDIGO,
     },
     venueCard: {
       flexDirection: 'row',
