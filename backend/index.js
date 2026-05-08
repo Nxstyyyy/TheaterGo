@@ -28,16 +28,25 @@ app.get('/', (req, res) => {
     res.json({ status: 'ok' });
 });
 
-const APK_PATH = path.resolve(
-    __dirname,
-    'files/TheaterGo.apk'
-);
+if (process.env.NODE_ENV === 'development') {
+    const APK_PATH = path.resolve(
+        __dirname,
+        process.env.APK_PATH || 'files/TheaterGo.apk'
+    );
 
-app.get('/download/app', (req, res) => {
-    if (!fs.existsSync(APK_PATH)) {
-        return res.status(404).json({ message: 'APK not found. Run the release build first.' });
-    }
-    res.download(APK_PATH, 'TheaterGo.apk');
+    app.get('/download/app', (req, res) => {
+        if (!fs.existsSync(APK_PATH)) {
+            return res.status(404).json({ message: 'APK not found. Run the release build first.' });
+        }
+        res.download(APK_PATH, path.basename(APK_PATH));
+    });
+}
+
+db.initDb().then(() => {
+    console.log('Database initialized');
+}).catch(err => {
+    console.error('Error initializing database:', err);
+    process.exit(1);
 });
 
 app.listen(APP_PORT, () => {

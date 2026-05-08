@@ -40,11 +40,8 @@ yarn-error.*
 # generated native folders
 /frontend/ios
 /frontend/android
-backend/database/schema.sql
-backend/database/queries.sql
+
 backend/database/seed.sql
-secret.txt
-frontend/eas.json
-test.py
+
 run doctor.bat
 backend/files/*.apk
