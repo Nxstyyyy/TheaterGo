@@ -28,6 +28,7 @@ app.get('/', (req, res) => {
     res.json({ status: 'ok' });
 });
 
+// development purposes only
 if (process.env.NODE_ENV === 'development') {
     const APK_PATH = path.resolve(
         __dirname,

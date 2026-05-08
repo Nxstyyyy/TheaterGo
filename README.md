@@ -346,7 +346,7 @@ cd TheaterGo
 ### 2. Database
 
 ```sql
--- Run in the MariaDB client
+-- open mariadb shell, login and run the bellow
 SOURCE backend/database/schema.sql;
 SOURCE backend/database/seed.sql;
 ```
@@ -366,7 +366,7 @@ node index.js
 npx nodemon index.js
 ```
 
-The server starts at `http://localhost:5000`.
+The server starts at `http://localhost:yourport`.
 
 ### 4. Frontend
 
@@ -379,7 +379,7 @@ npx expo start
 - Scan the QR code with Expo Go (Android/iOS).
 - For **Android Emulator**: press `a` in the terminal.
 
-> **Note:** When running on an Android Emulator, the backend URL must be `http://10.0.2.2:5000`. This is configured automatically via the `EXPO_PUBLIC_API_URL` environment variable.
+> **Note:** When running on an Android Emulator, the backend URL must be `http://10.0.2.2:yourport`. This is configured automatically via the `EXPO_PUBLIC_API_URL` environment variable.
 
 ---
 
@@ -401,8 +401,10 @@ DB_NAME=theater_go
 ### Frontend (`frontend/.env`)
 
 ```env
-EXPO_PUBLIC_API_URL=http://10.0.2.2:5000
+EXPO_PUBLIC_API_URL=your backend url for production
 ```
+
+> **Note:** `EXPO_PUBLIC_API_URL` is only used in **production** builds. In development (`__DEV__ === true`), the app automatically uses `http://10.0.2.2:5000` to reach the backend from an Android Emulator.
 
 ---
 
