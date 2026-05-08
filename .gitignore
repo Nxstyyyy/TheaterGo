@@ -41,7 +41,5 @@ yarn-error.*
 /frontend/ios
 /frontend/android
 
-backend/database/seed.sql
-
 run doctor.bat
 backend/files/*.apk
