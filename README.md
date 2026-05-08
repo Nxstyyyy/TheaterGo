@@ -336,6 +336,9 @@ The `ThemeContext` provides:
 - Android Emulator or physical device
 - Expo CLI: `npm install -g expo-cli`
 
+> **Environment Setup:** Before proceeding, follow the official Expo guide to set up your local development environment (Android Studio, JDK, SDK, emulator):
+> [https://docs.expo.dev/get-started/set-up-your-environment/?mode=development-build&buildEnv=local](https://docs.expo.dev/get-started/set-up-your-environment/?mode=development-build&buildEnv=local)
+
 ### 1. Clone the Repository
 
 ```bash
