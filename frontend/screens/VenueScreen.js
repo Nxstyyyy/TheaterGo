@@ -16,10 +16,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authFetch } from "../utils/authFetch";
 import { useTheme } from "../context/ThemeContext";
 
+import API_URL from "../utils/apiUrl";
+
 const { width } = Dimensions.get("window");
-const API_URL = __DEV__
-  ? "http://10.0.2.2:5000"
-  : process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000";
 
 const CATEGORIES = ["All", "Musical", "Drama", "Comedy", "Opera"];
 

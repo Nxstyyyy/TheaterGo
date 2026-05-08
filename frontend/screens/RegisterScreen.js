@@ -16,10 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../context/ThemeContext";
-
-const API_URL = __DEV__
-  ? "http://10.0.2.2:5000"
-  : process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000";
+import API_URL from "../utils/apiUrl";
 
 export default function RegisterScreen({
   onNavigateLogin,

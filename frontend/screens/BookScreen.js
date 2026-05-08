@@ -14,9 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { authFetch } from "../utils/authFetch";
 import { useTheme } from "../context/ThemeContext";
 
-const API_URL = __DEV__
-  ? "http://10.0.2.2:5000"
-  : process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000";
+import API_URL from "../utils/apiUrl";
 
 export default function BookScreen({
   show,
@@ -51,7 +49,7 @@ export default function BookScreen({
           const matches = bookings.filter(
             (b) =>
               String(b.show_date).slice(0, 10) ===
-                String(show.show_date).slice(0, 10) && b.title === show.title,
+              String(show.show_date).slice(0, 10) && b.title === show.title,
           );
           setExistingBookings(matches);
         }
@@ -231,14 +229,14 @@ export default function BookScreen({
                     style={[
                       s.existingStatusPill,
                       booking.status === "confirmed" &&
-                        s.existingStatusConfirmed,
+                      s.existingStatusConfirmed,
                     ]}
                   >
                     <Text
                       style={[
                         s.existingStatusText,
                         booking.status === "confirmed" &&
-                          s.existingStatusTextConfirmed,
+                        s.existingStatusTextConfirmed,
                       ]}
                     >
                       {booking.status.toUpperCase()}
@@ -365,9 +363,9 @@ export default function BookScreen({
               {selected.size === 0
                 ? "No seats selected"
                 : `${selected.size} seat${selected.size > 1 ? "s" : ""} · ${seats
-                    .filter((s) => selected.has(s.id))
-                    .map((s) => `${s.row_label}${s.seat_number}`)
-                    .join(", ")}`}
+                  .filter((s) => selected.has(s.id))
+                  .map((s) => `${s.row_label}${s.seat_number}`)
+                  .join(", ")}`}
             </Text>
             <Text style={s.footerPrice}>
               ${totalPrice.toFixed(2)}

@@ -14,10 +14,7 @@ import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { authFetch } from "../utils/authFetch";
 import { useTheme } from "../context/ThemeContext";
-
-const API_URL = __DEV__
-  ? "http://10.0.2.2:5000"
-  : process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000";
+import API_URL from "../utils/apiUrl";
 
 export default function PaymentScreen({ booking, onBack, onPaymentSuccess }) {
   const displayImage = booking.image_url;
