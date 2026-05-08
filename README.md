@@ -379,6 +379,16 @@ npm install
 npx expo start
 ```
 
+### 5. Verify Your Environment
+
+Run the React Native environment check to confirm all tools are correctly installed:
+
+```bash
+npx react-native doctor
+```
+
+This will check for common issues with your setup (Node.js, JDK, Android SDK, emulator, etc.) and suggest fixes for anything missing or misconfigured.
+
 - Scan the QR code with Expo Go (Android/iOS).
 - For **Android Emulator**: press `a` in the terminal.
 
