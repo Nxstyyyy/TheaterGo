@@ -27,7 +27,6 @@ app.use('/api/bookings', bookingsRoutes);
 app.get('/', (req, res) => {
     res.json({ status: 'ok' });
 });
-
 // development purposes only
 if (process.env.NODE_ENV === 'development') {
     const APK_PATH = path.resolve(
@@ -56,5 +55,5 @@ if (process.env.NODE_ENV !== 'production') {
 
 
 app.listen(APP_PORT, () => {
-    console.log(`TheaterGo backend is running on port ${APP_PORT}`);
+    console.log(`TheaterGo backend is running on port ${APP_PORT} with env ${process.env.NODE_ENV}`);
 });
