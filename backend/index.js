@@ -43,12 +43,17 @@ if (process.env.NODE_ENV === 'development') {
     });
 }
 
-db.initDb().then(() => {
-    console.log('Database initialized');
-}).catch(err => {
-    console.error('Error initializing database:', err);
-    process.exit(1);
-});
+// initDb runs schema setup only in development (local MariaDB).
+// In production (Vercel) the database is already set up.
+if (process.env.NODE_ENV !== 'production') {
+    db.initDb()
+        .then(() => console.log('Database initialized'))
+        .catch(err => {
+            console.error('Error initializing database:', err);
+            process.exit(1);
+        });
+}
+
 
 app.listen(APP_PORT, () => {
     console.log(`TheaterGo backend is running on port ${APP_PORT}`);

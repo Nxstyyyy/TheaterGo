@@ -398,6 +398,8 @@ DB_PASSWORD=your_db_password
 DB_NAME=theater_go
 ```
 
+> **Note:** When `enviroment is production`, the automatic database initialization (`initDb`) is **skipped**. The database and tables must already exist in your production environment. `initDb` only runs in development (`enviroment` not set or set to `development`) to create the database and apply `schema.sql` automatically.
+
 ### Frontend (`frontend/.env`)
 
 ```env
