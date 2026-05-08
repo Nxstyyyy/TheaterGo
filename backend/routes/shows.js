@@ -1,10 +1,10 @@
-const router = require('express').Router();
-const db = require('../database');
-const { authenticate } = require('../middleware/auth');
+const router = require("express").Router();
+const db = require("../database");
+const { authenticate } = require("../middleware/auth");
 
-router.get('/', authenticate, async (req, res) => {
-    try {
-        const shows = await db.query(`
+router.get("/", authenticate, async (req, res) => {
+  try {
+    const shows = await db.query(`
             SELECT
                 sh.id AS show_id,
                 sh.show_date,
@@ -37,28 +37,29 @@ router.get('/', authenticate, async (req, res) => {
             ORDER BY sh.show_date, sh.show_time
         `);
 
-        if (shows.length === 0) {
-            return res.status(404).json({ error: 'No upcoming shows found' });
-        }
-
-        const result = shows.map((s) => ({
-            ...s,
-            available_seats: Number(s.available_seats),
-        }));
-
-        res.json(result);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Internal server error' });
+    if (shows.length === 0) {
+      return res.status(404).json({ error: "No upcoming shows found" });
     }
+
+    const result = shows.map((s) => ({
+      ...s,
+      available_seats: Number(s.available_seats),
+    }));
+
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // router.get('/:id', authenticate, async (req, res) => {
 
 // GET /api/shows/:show_id/seats — available seats for a specific show
-router.get('/:show_id/seats', authenticate, async (req, res) => {
-    try {
-        const rows = await db.query(`
+router.get("/:show_id/seats", authenticate, async (req, res) => {
+  try {
+    const rows = await db.query(
+      `
             SELECT
                 s.id,
                 s.row_label,
@@ -74,13 +75,15 @@ router.get('/:show_id/seats', authenticate, async (req, res) => {
             FROM seats s
             WHERE s.show_id = ?
             ORDER BY s.row_label, s.seat_number
-        `, [req.params.show_id]);
+        `,
+      [req.params.show_id],
+    );
 
-        res.json(rows);
-    } catch (err) {
-        console.error('Error fetching seats:', err.message);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+    res.json(rows);
+  } catch (err) {
+    console.error("Error fetching seats:", err.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 module.exports = router;

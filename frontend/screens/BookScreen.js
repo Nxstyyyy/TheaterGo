@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,16 +7,23 @@ import {
   ScrollView,
   StyleSheet,
   ActivityIndicator,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
-import { Ionicons } from '@expo/vector-icons';
-import { authFetch } from '../utils/authFetch';
-import { useTheme } from '../context/ThemeContext';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
+import { Ionicons } from "@expo/vector-icons";
+import { authFetch } from "../utils/authFetch";
+import { useTheme } from "../context/ThemeContext";
 
-const API_URL = __DEV__ ? 'http://10.0.2.2:5000' : process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = __DEV__
+  ? "http://10.0.2.2:5000"
+  : process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000";
 
-export default function BookScreen({ show, onBack, onBookingSuccess, onNavigatePayment }) {
+export default function BookScreen({
+  show,
+  onBack,
+  onBookingSuccess,
+  onNavigatePayment,
+}) {
   const { colors } = useTheme();
   const [seats, setSeats] = useState([]);
   const [selected, setSelected] = useState(new Set());
@@ -36,15 +43,15 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
         ]);
 
         if (!seatsRes) return;
-        if (!seatsRes.ok) throw new Error('Failed to load seats');
+        if (!seatsRes.ok) throw new Error("Failed to load seats");
         setSeats(await seatsRes.json());
 
         if (bookingsRes.ok) {
           const bookings = await bookingsRes.json();
           const matches = bookings.filter(
             (b) =>
-              String(b.show_date).slice(0, 10) === String(show.show_date).slice(0, 10) &&
-              b.title === show.title
+              String(b.show_date).slice(0, 10) ===
+                String(show.show_date).slice(0, 10) && b.title === show.title,
           );
           setExistingBookings(matches);
         }
@@ -80,23 +87,26 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
     setError(null);
     try {
       const res = await authFetch(`${API_URL}/api/bookings`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ show_id: show.show_id, seat_ids: Array.from(selected) }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          show_id: show.show_id,
+          seat_ids: Array.from(selected),
+        }),
       });
       if (!res) return;
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message ?? 'Booking failed');
+      if (!res.ok) throw new Error(data.message ?? "Booking failed");
 
       const seatLabels = seats
         .filter((s) => selected.has(s.id))
         .map((s) => `${s.row_label}${s.seat_number}`)
-        .join(', ');
+        .join(", ");
 
       onNavigatePayment?.({
         booking_id: data.booking_id,
         total_price: data.total_price,
-        status: 'pending',
+        status: "pending",
         booked_at: new Date().toISOString(),
         show_date: show.show_date,
         show_time: show.show_time,
@@ -114,47 +124,74 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
   };
 
   const formatDate = (dateStr) =>
-    new Date(dateStr).toLocaleDateString('en-US', {
-      weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
+    new Date(dateStr).toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
     });
 
   const formatTime = (timeStr) => {
-    const [h, m] = timeStr.split(':');
+    const [h, m] = timeStr.split(":");
     const d = new Date();
     d.setHours(+h, +m);
-    return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    return d.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    });
   };
 
   // ── Main booking screen ──────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={s.safe} edges={['top']}>
+    <SafeAreaView style={s.safe} edges={["top"]}>
       <StatusBar style={colors.statusBar} />
 
       {/* Header */}
       <View style={s.header}>
-        <TouchableOpacity style={s.backBtn} onPress={onBack} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={s.backBtn}
+          onPress={onBack}
+          activeOpacity={0.8}
+        >
           <Ionicons name="arrow-back" size={22} color={colors.sectionTitle} />
         </TouchableOpacity>
         <Text style={s.headerTitle}>Select Seats</Text>
         <View style={{ width: 38 }} />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={s.scroll}
+      >
         {/* Show summary */}
         <View style={s.showSummary}>
           <Image source={{ uri: show.image_url }} style={s.summaryImage} />
           <View style={s.summaryInfo}>
-            <Text style={s.summaryTitle} numberOfLines={2}>{show.title}</Text>
+            <Text style={s.summaryTitle} numberOfLines={2}>
+              {show.title}
+            </Text>
             <View style={s.summaryRow}>
-              <Ionicons name="location-outline" size={12} color={colors.venueSubtext} />
+              <Ionicons
+                name="location-outline"
+                size={12}
+                color={colors.venueSubtext}
+              />
               <Text style={s.summaryMeta}>{show.venue_name}</Text>
             </View>
             <View style={s.summaryRow}>
-              <Ionicons name="calendar-outline" size={12} color={colors.venueSubtext} />
+              <Ionicons
+                name="calendar-outline"
+                size={12}
+                color={colors.venueSubtext}
+              />
               <Text style={s.summaryMeta}>{formatDate(show.show_date)}</Text>
             </View>
             <View style={s.summaryRow}>
-              <Ionicons name="time-outline" size={12} color={colors.venueSubtext} />
+              <Ionicons
+                name="time-outline"
+                size={12}
+                color={colors.venueSubtext}
+              />
               <Text style={s.summaryMeta}>{formatTime(show.show_time)}</Text>
             </View>
           </View>
@@ -164,9 +201,12 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
         {existingBookings.length > 0 && (
           <View style={s.existingSection}>
             <Text style={s.existingSectionTitle}>
-              Your booking{existingBookings.length > 1 ? 's' : ''} for this show
+              Your booking{existingBookings.length > 1 ? "s" : ""} for this show
             </Text>
-            {(showAllBookings ? existingBookings : existingBookings.slice(0, 2)).map((booking, index, arr) => (
+            {(showAllBookings
+              ? existingBookings
+              : existingBookings.slice(0, 2)
+            ).map((booking, index, arr) => (
               <View
                 key={booking.booking_id}
                 style={[
@@ -178,15 +218,29 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
                   <Ionicons name="ticket" size={18} color={colors.INDIGO} />
                 </View>
                 <View style={s.existingBannerBody}>
-                  <Text style={s.existingBannerTitle}>Booking #{booking.booking_id}</Text>
+                  <Text style={s.existingBannerTitle}>
+                    Booking #{booking.booking_id}
+                  </Text>
                   <Text style={s.existingBannerSub}>
-                    Seats: {booking.seats ?? '—'}
+                    Seats: {booking.seats ?? "—"}
                   </Text>
                   <Text style={s.existingBannerSub}>
                     Total: ${Number(booking.total_price).toFixed(2)}
                   </Text>
-                  <View style={[s.existingStatusPill, booking.status === 'confirmed' && s.existingStatusConfirmed]}>
-                    <Text style={[s.existingStatusText, booking.status === 'confirmed' && s.existingStatusTextConfirmed]}>
+                  <View
+                    style={[
+                      s.existingStatusPill,
+                      booking.status === "confirmed" &&
+                        s.existingStatusConfirmed,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        s.existingStatusText,
+                        booking.status === "confirmed" &&
+                          s.existingStatusTextConfirmed,
+                      ]}
+                    >
                       {booking.status.toUpperCase()}
                     </Text>
                   </View>
@@ -201,11 +255,11 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
               >
                 <Text style={s.showMoreText}>
                   {showAllBookings
-                    ? 'Show less'
+                    ? "Show less"
                     : `Show ${existingBookings.length - 2} more`}
                 </Text>
                 <Ionicons
-                  name={showAllBookings ? 'chevron-up' : 'chevron-down'}
+                  name={showAllBookings ? "chevron-up" : "chevron-down"}
                   size={14}
                   color={colors.INDIGO}
                 />
@@ -224,12 +278,25 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
         {/* Legend */}
         <View style={s.legend}>
           {[
-            { color: colors.venueBg, border: colors.pillInactiveBorder, label: 'Available' },
-            { color: colors.INDIGO, border: colors.INDIGO, label: 'Selected' },
-            { color: colors.inputBorder, border: colors.inputBorder, label: 'Taken' },
+            {
+              color: colors.venueBg,
+              border: colors.pillInactiveBorder,
+              label: "Available",
+            },
+            { color: colors.INDIGO, border: colors.INDIGO, label: "Selected" },
+            {
+              color: colors.inputBorder,
+              border: colors.inputBorder,
+              label: "Taken",
+            },
           ].map((item) => (
             <View key={item.label} style={s.legendItem}>
-              <View style={[s.legendDot, { backgroundColor: item.color, borderColor: item.border }]} />
+              <View
+                style={[
+                  s.legendDot,
+                  { backgroundColor: item.color, borderColor: item.border },
+                ]}
+              />
               <Text style={s.legendLabel}>{item.label}</Text>
             </View>
           ))}
@@ -237,7 +304,11 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
 
         {/* Seat map */}
         {loading ? (
-          <ActivityIndicator size="large" color={colors.INDIGO} style={{ marginTop: 30 }} />
+          <ActivityIndicator
+            size="large"
+            color={colors.INDIGO}
+            style={{ marginTop: 30 }}
+          />
         ) : error ? (
           <Text style={s.errorText}>{error}</Text>
         ) : seats.length === 0 ? (
@@ -263,11 +334,13 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
                         activeOpacity={isTaken ? 1 : 0.7}
                         disabled={isTaken}
                       >
-                        <Text style={[
-                          s.seatNum,
-                          isSel && s.seatNumSelected,
-                          isTaken && s.seatNumTaken,
-                        ]}>
+                        <Text
+                          style={[
+                            s.seatNum,
+                            isSel && s.seatNumSelected,
+                            isTaken && s.seatNumTaken,
+                          ]}
+                        >
                           {seat.seat_number}
                         </Text>
                       </TouchableOpacity>
@@ -285,19 +358,16 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
 
       {/* Sticky bottom summary + confirm */}
       <View style={s.footer}>
-        {error && !loading && (
-          <Text style={s.footerError}>{error}</Text>
-        )}
+        {error && !loading && <Text style={s.footerError}>{error}</Text>}
         <View style={s.footerSummary}>
           <View>
             <Text style={s.footerSeats}>
               {selected.size === 0
-                ? 'No seats selected'
-                : `${selected.size} seat${selected.size > 1 ? 's' : ''} · ${seats
-                  .filter((s) => selected.has(s.id))
-                  .map((s) => `${s.row_label}${s.seat_number}`)
-                  .join(', ')
-                }`}
+                ? "No seats selected"
+                : `${selected.size} seat${selected.size > 1 ? "s" : ""} · ${seats
+                    .filter((s) => selected.has(s.id))
+                    .map((s) => `${s.row_label}${s.seat_number}`)
+                    .join(", ")}`}
             </Text>
             <Text style={s.footerPrice}>
               ${totalPrice.toFixed(2)}
@@ -305,7 +375,10 @@ export default function BookScreen({ show, onBack, onBookingSuccess, onNavigateP
             </Text>
           </View>
           <TouchableOpacity
-            style={[s.confirmBtn, (selected.size === 0 || submitting) && s.confirmBtnDisabled]}
+            style={[
+              s.confirmBtn,
+              (selected.size === 0 || submitting) && s.confirmBtnDisabled,
+            ]}
             onPress={handleConfirm}
             activeOpacity={0.88}
             disabled={selected.size === 0 || submitting}
@@ -328,9 +401,9 @@ function makeStyles(colors) {
 
     // Header
     header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
       paddingHorizontal: 16,
       paddingVertical: 12,
     },
@@ -339,12 +412,12 @@ function makeStyles(colors) {
       height: 38,
       borderRadius: 19,
       backgroundColor: colors.pillInactiveBg,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
     },
     headerTitle: {
       fontSize: 18,
-      fontWeight: '800',
+      fontWeight: "800",
       color: colors.sectionTitle,
     },
 
@@ -356,7 +429,7 @@ function makeStyles(colors) {
     },
     existingSectionTitle: {
       fontSize: 14,
-      fontWeight: '700',
+      fontWeight: "700",
       color: colors.sectionTitle,
       marginBottom: 10,
     },
@@ -364,11 +437,11 @@ function makeStyles(colors) {
       marginBottom: 10,
     },
     existingBanner: {
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      backgroundColor: colors.INDIGO + '12',
+      flexDirection: "row",
+      alignItems: "flex-start",
+      backgroundColor: colors.INDIGO + "12",
       borderWidth: 1,
-      borderColor: colors.INDIGO + '40',
+      borderColor: colors.INDIGO + "40",
       borderRadius: 12,
       padding: 12,
       marginBottom: 20,
@@ -383,7 +456,7 @@ function makeStyles(colors) {
     },
     existingBannerTitle: {
       fontSize: 14,
-      fontWeight: '700',
+      fontWeight: "700",
       color: colors.sectionTitle,
     },
     existingBannerSub: {
@@ -391,7 +464,7 @@ function makeStyles(colors) {
       color: colors.venueSubtext,
     },
     existingStatusPill: {
-      alignSelf: 'flex-start',
+      alignSelf: "flex-start",
       marginTop: 4,
       paddingHorizontal: 9,
       paddingVertical: 2,
@@ -399,76 +472,76 @@ function makeStyles(colors) {
       backgroundColor: colors.inputBorder,
     },
     existingStatusConfirmed: {
-      backgroundColor: '#22C55E22',
+      backgroundColor: "#22C55E22",
     },
     existingStatusText: {
       fontSize: 10,
-      fontWeight: '700',
+      fontWeight: "700",
       color: colors.venueSubtext,
       letterSpacing: 0.5,
     },
     existingStatusTextConfirmed: {
-      color: '#22C55E',
+      color: "#22C55E",
     },
     showMoreBtn: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
       gap: 4,
       paddingVertical: 8,
     },
     showMoreText: {
       fontSize: 13,
-      fontWeight: '600',
+      fontWeight: "600",
       color: colors.INDIGO,
     },
 
     // Show summary
     showSummary: {
-      flexDirection: 'row',
+      flexDirection: "row",
       backgroundColor: colors.venueBg,
       borderWidth: 1,
       borderColor: colors.venueBorder,
       borderRadius: 14,
-      overflow: 'hidden',
+      overflow: "hidden",
       marginBottom: 24,
     },
     summaryImage: { width: 90, height: 110 },
     summaryInfo: { flex: 1, padding: 12, gap: 5 },
     summaryTitle: {
       fontSize: 15,
-      fontWeight: '700',
+      fontWeight: "700",
       color: colors.sectionTitle,
     },
-    summaryRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+    summaryRow: { flexDirection: "row", alignItems: "center", gap: 4 },
     summaryMeta: { fontSize: 12, color: colors.venueSubtext },
 
     // Stage
-    stageWrapper: { alignItems: 'center', marginBottom: 16 },
+    stageWrapper: { alignItems: "center", marginBottom: 16 },
     stage: {
-      width: '70%',
+      width: "70%",
       paddingVertical: 8,
-      backgroundColor: colors.INDIGO + '22',
+      backgroundColor: colors.INDIGO + "22",
       borderRadius: 8,
-      alignItems: 'center',
+      alignItems: "center",
       borderWidth: 1,
-      borderColor: colors.INDIGO + '55',
+      borderColor: colors.INDIGO + "55",
     },
     stageText: {
       fontSize: 11,
-      fontWeight: '800',
+      fontWeight: "800",
       color: colors.INDIGO,
       letterSpacing: 3,
     },
 
     // Legend
     legend: {
-      flexDirection: 'row',
-      justifyContent: 'center',
+      flexDirection: "row",
+      justifyContent: "center",
       gap: 20,
       marginBottom: 20,
     },
-    legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    legendItem: { flexDirection: "row", alignItems: "center", gap: 6 },
     legendDot: {
       width: 16,
       height: 16,
@@ -480,22 +553,22 @@ function makeStyles(colors) {
     // Seat map
     seatMap: { gap: 8 },
     seatRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: 8,
     },
     rowLabel: {
       width: 18,
       fontSize: 12,
-      fontWeight: '700',
+      fontWeight: "700",
       color: colors.venueSubtext,
-      textAlign: 'center',
+      textAlign: "center",
     },
     seatsInRow: {
       flex: 1,
-      flexDirection: 'row',
+      flexDirection: "row",
       gap: 6,
-      flexWrap: 'wrap',
+      flexWrap: "wrap",
     },
     seat: {
       width: 34,
@@ -504,8 +577,8 @@ function makeStyles(colors) {
       backgroundColor: colors.venueBg,
       borderWidth: 1.5,
       borderColor: colors.pillInactiveBorder,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
     },
     seatSelected: {
       backgroundColor: colors.INDIGO,
@@ -517,15 +590,15 @@ function makeStyles(colors) {
     },
     seatNum: {
       fontSize: 11,
-      fontWeight: '700',
+      fontWeight: "700",
       color: colors.sectionTitle,
     },
-    seatNumSelected: { color: '#fff' },
+    seatNumSelected: { color: "#fff" },
     seatNumTaken: { color: colors.background },
 
     // Footer
     footer: {
-      position: 'absolute',
+      position: "absolute",
       bottom: 0,
       left: 0,
       right: 0,
@@ -537,15 +610,15 @@ function makeStyles(colors) {
       paddingBottom: 28,
     },
     footerError: {
-      color: '#EF4444',
+      color: "#EF4444",
       fontSize: 13,
-      textAlign: 'center',
+      textAlign: "center",
       marginBottom: 8,
     },
     footerSummary: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
     },
     footerSeats: {
       fontSize: 12,
@@ -554,12 +627,12 @@ function makeStyles(colors) {
     },
     footerPrice: {
       fontSize: 22,
-      fontWeight: '800',
-      color: '#10B981',
+      fontWeight: "800",
+      color: "#10B981",
     },
     footerPriceSub: {
       fontSize: 13,
-      fontWeight: '400',
+      fontWeight: "400",
       color: colors.venueSubtext,
     },
     confirmBtn: {
@@ -568,15 +641,15 @@ function makeStyles(colors) {
       paddingVertical: 14,
       paddingHorizontal: 22,
       minWidth: 150,
-      alignItems: 'center',
+      alignItems: "center",
     },
     confirmBtnDisabled: { opacity: 0.45 },
-    confirmBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
+    confirmBtnText: { color: "#fff", fontSize: 15, fontWeight: "700" },
 
     // Confirmation screen
     confirmScroll: {
       flexGrow: 1,
-      alignItems: 'center',
+      alignItems: "center",
       paddingHorizontal: 24,
       paddingTop: 40,
       paddingBottom: 40,
@@ -584,7 +657,7 @@ function makeStyles(colors) {
     confirmIcon: { marginBottom: 16 },
     confirmTitle: {
       fontSize: 26,
-      fontWeight: '800',
+      fontWeight: "800",
       color: colors.sectionTitle,
       marginBottom: 6,
     },
@@ -594,23 +667,23 @@ function makeStyles(colors) {
       marginBottom: 32,
     },
     ticket: {
-      width: '100%',
+      width: "100%",
       backgroundColor: colors.venueBg,
       borderWidth: 1,
       borderColor: colors.venueBorder,
       borderRadius: 16,
-      overflow: 'hidden',
+      overflow: "hidden",
       marginBottom: 32,
     },
-    ticketImage: { width: '100%', height: 160 },
+    ticketImage: { width: "100%", height: 160 },
     ticketBody: { padding: 16, gap: 8 },
     ticketShow: {
       fontSize: 18,
-      fontWeight: '800',
+      fontWeight: "800",
       color: colors.sectionTitle,
       marginBottom: 4,
     },
-    ticketRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    ticketRow: { flexDirection: "row", alignItems: "center", gap: 6 },
     ticketMeta: { fontSize: 14, color: colors.venueSubtext },
     ticketDivider: {
       height: 1,
@@ -618,16 +691,26 @@ function makeStyles(colors) {
       marginVertical: 6,
     },
     doneBtn: {
-      width: '100%',
+      width: "100%",
       backgroundColor: colors.INDIGO,
       borderRadius: 14,
       paddingVertical: 16,
-      alignItems: 'center',
+      alignItems: "center",
     },
-    doneBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+    doneBtnText: { color: "#fff", fontSize: 16, fontWeight: "700" },
 
     // Feedback
-    errorText: { textAlign: 'center', color: '#e74c3c', fontSize: 14, marginTop: 20 },
-    emptyText: { textAlign: 'center', color: colors.venueSubtext, fontSize: 14, marginTop: 20 },
+    errorText: {
+      textAlign: "center",
+      color: "#e74c3c",
+      fontSize: 14,
+      marginTop: 20,
+    },
+    emptyText: {
+      textAlign: "center",
+      color: colors.venueSubtext,
+      fontSize: 14,
+      marginTop: 20,
+    },
   });
 }

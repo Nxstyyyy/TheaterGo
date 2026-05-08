@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
+import { useState } from "react";
+import { StatusBar } from "expo-status-bar";
 import {
   Text,
   View,
@@ -11,18 +11,23 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTheme } from '../context/ThemeContext';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTheme } from "../context/ThemeContext";
 
-const API_URL = __DEV__ ? 'http://10.0.2.2:5000' : process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = __DEV__
+  ? "http://10.0.2.2:5000"
+  : process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000";
 
-export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) {
+export default function LoginScreen({
+  onNavigateRegister,
+  onNavigateDiscover,
+}) {
   const { colors, isDark, toggleTheme } = useTheme();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const styles = makeStyles(colors);
@@ -30,28 +35,31 @@ export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) 
   const handleSignIn = async () => {
     if (!email || !password) {
       // alert('Please enter both email and password');
-      Alert.alert('Missing Information', 'Please enter both email and password');
+      Alert.alert(
+        "Missing Information",
+        "Please enter both email and password",
+      );
       return;
     }
 
     setIsLoading(true);
     try {
       const response = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
 
       if (!response.ok) {
-        Alert.alert('Login Failed', data.message || 'Login failed');
+        Alert.alert("Login Failed", data.message || "Login failed");
         return;
       }
 
-      await AsyncStorage.setItem('token', data.token);
+      await AsyncStorage.setItem("token", data.token);
       onNavigateDiscover();
     } catch (err) {
-      Alert.alert('Connection Error', 'Could not connect to server');
+      Alert.alert("Connection Error", "Could not connect to server");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -63,29 +71,46 @@ export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) 
       <StatusBar style={colors.statusBar} />
       <KeyboardAvoidingView
         style={styles.keyboardView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+        >
           {/* Top logo bar */}
           <View style={styles.logoBar}>
             <View style={styles.logoIconWrapper}>
-              <Image source={require('../assets/icon_app.png')} style={styles.logoIconImg} />
+              <Image
+                source={require("../assets/icon_app.png")}
+                style={styles.logoIconImg}
+              />
             </View>
             <Text style={styles.logoText}>TheaterGo</Text>
             <TouchableOpacity onPress={toggleTheme} style={styles.themeToggle}>
-              <Ionicons name={isDark ? 'sunny-outline' : 'moon-outline'} size={20} color={colors.logoText} />
+              <Ionicons
+                name={isDark ? "sunny-outline" : "moon-outline"}
+                size={20}
+                color={colors.logoText}
+              />
             </TouchableOpacity>
           </View>
 
           {/* Card */}
           <View style={styles.card}>
             <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Sign in to access your digital tickets</Text>
+            <Text style={styles.subtitle}>
+              Sign in to access your digital tickets
+            </Text>
 
             {/* Email field */}
             <Text style={styles.label}>Email Address</Text>
             <View style={styles.inputWrapper}>
-              <Ionicons name="mail-outline" size={18} color={colors.iconColor} style={styles.inputIcon} />
+              <Ionicons
+                name="mail-outline"
+                size={18}
+                color={colors.iconColor}
+                style={styles.inputIcon}
+              />
               <TextInput
                 style={styles.input}
                 placeholder="you@example.com"
@@ -106,7 +131,12 @@ export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) 
               </TouchableOpacity>
             </View>
             <View style={styles.inputWrapper}>
-              <Ionicons name="lock-closed-outline" size={18} color={colors.iconColor} style={styles.inputIcon} />
+              <Ionicons
+                name="lock-closed-outline"
+                size={18}
+                color={colors.iconColor}
+                style={styles.inputIcon}
+              />
               <TextInput
                 style={styles.input}
                 placeholder="••••••••"
@@ -116,9 +146,12 @@ export default function LoginScreen({ onNavigateRegister, onNavigateDiscover }) 
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
               />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)}
+                style={styles.eyeBtn}
+              >
                 <Ionicons
-                  name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                  name={showPassword ? "eye-outline" : "eye-off-outline"}
                   size={18}
                   color={colors.iconColor}
                 />
@@ -164,16 +197,16 @@ function makeStyles(colors) {
     },
     scroll: {
       flexGrow: 1,
-      alignItems: 'center',
+      alignItems: "center",
       paddingVertical: 40,
       paddingHorizontal: 20,
     },
 
     // Logo bar
     logoBar: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      alignSelf: 'flex-start',
+      flexDirection: "row",
+      alignItems: "center",
+      alignSelf: "flex-start",
       marginBottom: 32,
       marginLeft: 4,
     },
@@ -181,18 +214,18 @@ function makeStyles(colors) {
       width: 32,
       height: 32,
       borderRadius: 8,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
       marginRight: 8,
     },
     logoIconImg: {
       width: 64,
       height: 64,
-      resizeMode: 'contain',
+      resizeMode: "contain",
     },
     logoText: {
       fontSize: 18,
-      fontWeight: '700',
+      fontWeight: "700",
       color: colors.logoText,
       flex: 1,
     },
@@ -202,11 +235,11 @@ function makeStyles(colors) {
 
     // Card
     card: {
-      width: '100%',
+      width: "100%",
       backgroundColor: colors.card,
       borderRadius: 20,
       padding: 28,
-      shadowColor: '#000',
+      shadowColor: "#000",
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.08,
       shadowRadius: 16,
@@ -214,28 +247,28 @@ function makeStyles(colors) {
     },
     title: {
       fontSize: 24,
-      fontWeight: '800',
+      fontWeight: "800",
       color: colors.title,
       marginBottom: 6,
-      textAlign: 'center',
+      textAlign: "center",
     },
     subtitle: {
       fontSize: 13,
       color: colors.subtitle,
-      textAlign: 'center',
+      textAlign: "center",
       marginBottom: 24,
     },
 
     // Inputs
     label: {
       fontSize: 13,
-      fontWeight: '600',
+      fontWeight: "600",
       color: colors.label,
       marginBottom: 6,
     },
     inputWrapper: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       borderWidth: 1,
       borderColor: colors.inputBorder,
       borderRadius: 10,
@@ -256,14 +289,14 @@ function makeStyles(colors) {
       padding: 4,
     },
     passwordHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
       marginBottom: 6,
     },
     forgotText: {
       fontSize: 13,
-      fontWeight: '500',
+      fontWeight: "500",
       color: colors.INDIGO,
     },
 
@@ -272,7 +305,7 @@ function makeStyles(colors) {
       backgroundColor: colors.INDIGO,
       borderRadius: 12,
       paddingVertical: 14,
-      alignItems: 'center',
+      alignItems: "center",
       marginTop: 4,
       marginBottom: 20,
     },
@@ -280,17 +313,17 @@ function makeStyles(colors) {
       opacity: 0.6,
     },
     signInText: {
-      color: '#fff',
+      color: "#fff",
       fontSize: 15,
-      fontWeight: '700',
+      fontWeight: "700",
       letterSpacing: 0.3,
     },
 
     // Footer
     footerRow: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
     },
     footerText: {
       fontSize: 13,
@@ -298,7 +331,7 @@ function makeStyles(colors) {
     },
     footerLink: {
       fontSize: 13,
-      fontWeight: '600',
+      fontWeight: "600",
       color: colors.INDIGO,
     },
   };

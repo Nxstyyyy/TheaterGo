@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 let _logoutHandler = null;
 
@@ -8,7 +8,7 @@ export function setLogoutHandler(fn) {
 
 function isTokenExpired(token) {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const payload = JSON.parse(atob(token.split(".")[1]));
     return payload.exp && Date.now() / 1000 > payload.exp;
   } catch {
     return true;
@@ -16,12 +16,12 @@ function isTokenExpired(token) {
 }
 
 async function doLogout() {
-  await AsyncStorage.removeItem('token');
+  await AsyncStorage.removeItem("token");
   _logoutHandler?.();
 }
 
 export async function authFetch(url, options = {}) {
-  const token = await AsyncStorage.getItem('token');
+  const token = await AsyncStorage.getItem("token");
 
   if (!token || isTokenExpired(token)) {
     await doLogout();

@@ -36,7 +36,7 @@ router.post("/register", async (req, res, next) => {
 
         const conn = await db.getConnection();
         const result = await conn.query(
-            "INSERT INTO users (name, email, password) VALUES (?, ?, ?)", 
+            "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
             [name, email, hashedPassword]
         );
         conn.release();

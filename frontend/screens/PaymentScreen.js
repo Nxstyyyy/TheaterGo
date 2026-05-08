@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   View,
   Text,
@@ -8,14 +8,16 @@ import {
   StyleSheet,
   ActivityIndicator,
   Image,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
-import { Ionicons } from '@expo/vector-icons';
-import { authFetch } from '../utils/authFetch';
-import { useTheme } from '../context/ThemeContext';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
+import { Ionicons } from "@expo/vector-icons";
+import { authFetch } from "../utils/authFetch";
+import { useTheme } from "../context/ThemeContext";
 
-const API_URL = __DEV__ ? 'http://10.0.2.2:5000' : process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = __DEV__
+  ? "http://10.0.2.2:5000"
+  : process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function PaymentScreen({ booking, onBack, onPaymentSuccess }) {
   const displayImage = booking.image_url;
@@ -24,32 +26,32 @@ export default function PaymentScreen({ booking, onBack, onPaymentSuccess }) {
   const displayCity = booking.city;
   const displayDate = booking.show_date;
   const displayTime = booking.show_time;
-  const displaySeats = booking.seats ?? '—';
+  const displaySeats = booking.seats ?? "—";
   const displayTotal = Number(booking.total_price);
   const { colors } = useTheme();
   const s = makeStyles(colors);
 
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardHolder, setCardHolder] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvv, setCvv] = useState('');
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardHolder, setCardHolder] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvv, setCvv] = useState("");
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
   const formatCardNumber = (val) => {
-    const digits = val.replace(/\D/g, '').slice(0, 16);
-    return digits.replace(/(.{4})/g, '$1 ').trim();
+    const digits = val.replace(/\D/g, "").slice(0, 16);
+    return digits.replace(/(.{4})/g, "$1 ").trim();
   };
 
   const formatExpiry = (val) => {
-    const digits = val.replace(/\D/g, '').slice(0, 4);
+    const digits = val.replace(/\D/g, "").slice(0, 4);
     if (digits.length >= 3) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
     return digits;
   };
 
   const isValid =
-    cardNumber.replace(/\s/g, '').length === 16 &&
+    cardNumber.replace(/\s/g, "").length === 16 &&
     cardHolder.trim().length >= 2 &&
     expiry.length === 5 &&
     cvv.length >= 3;
@@ -64,14 +66,17 @@ export default function PaymentScreen({ booking, onBack, onPaymentSuccess }) {
 
     try {
       // Always PATCH to confirm the pending booking
-      const res = await authFetch(`${API_URL}/api/bookings/${booking.booking_id}/confirm`, {
-        method: 'PATCH',
-      });
+      const res = await authFetch(
+        `${API_URL}/api/bookings/${booking.booking_id}/confirm`,
+        {
+          method: "PATCH",
+        },
+      );
       if (!res?.ok) {
         const body = await res?.json().catch(() => ({}));
-        throw new Error(body?.message || 'Payment failed');
+        throw new Error(body?.message || "Payment failed");
       }
-      const confirmedBooking = { ...booking, status: 'confirmed' };
+      const confirmedBooking = { ...booking, status: "confirmed" };
       setSuccess(true);
       setTimeout(() => onPaymentSuccess?.(confirmedBooking), 1500);
     } catch (err) {
@@ -82,22 +87,33 @@ export default function PaymentScreen({ booking, onBack, onPaymentSuccess }) {
   };
 
   const formatShowDate = (dateStr) =>
-    new Date(dateStr).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    new Date(dateStr).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
 
   const formatTime = (timeStr) => {
-    const [h, m] = timeStr.split(':');
+    const [h, m] = timeStr.split(":");
     const d = new Date();
     d.setHours(+h, +m);
-    return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    return d.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    });
   };
 
   return (
-    <SafeAreaView style={s.safe} edges={['top']}>
+    <SafeAreaView style={s.safe} edges={["top"]}>
       <StatusBar style={colors.statusBar} />
 
       {/* Header */}
       <View style={s.header}>
-        <TouchableOpacity onPress={onBack} style={s.backBtn} activeOpacity={0.7}>
+        <TouchableOpacity
+          onPress={onBack}
+          style={s.backBtn}
+          activeOpacity={0.7}
+        >
           <Ionicons name="arrow-back" size={22} color={colors.sectionTitle} />
         </TouchableOpacity>
         <Text style={s.headerTitle}>Complete Payment</Text>
@@ -115,19 +131,32 @@ export default function PaymentScreen({ booking, onBack, onPaymentSuccess }) {
           <View style={s.summaryBody}>
             <Text style={s.summaryTitle}>{displayTitle}</Text>
             <View style={s.summaryRow}>
-              <Ionicons name="location-outline" size={13} color={colors.venueSubtext} />
+              <Ionicons
+                name="location-outline"
+                size={13}
+                color={colors.venueSubtext}
+              />
               <Text style={s.summaryVenue}>
-                {displayVenue}{displayCity ? `, ${displayCity}` : ''}
+                {displayVenue}
+                {displayCity ? `, ${displayCity}` : ""}
               </Text>
             </View>
             <View style={s.summaryRow}>
-              <Ionicons name="calendar-outline" size={13} color={colors.venueSubtext} />
+              <Ionicons
+                name="calendar-outline"
+                size={13}
+                color={colors.venueSubtext}
+              />
               <Text style={s.summaryMeta}>
                 {formatShowDate(displayDate)} • {formatTime(displayTime)}
               </Text>
             </View>
             <View style={s.summaryRow}>
-              <Ionicons name="ticket-outline" size={13} color={colors.venueSubtext} />
+              <Ionicons
+                name="ticket-outline"
+                size={13}
+                color={colors.venueSubtext}
+              />
               <Text style={s.summaryMeta}>{displaySeats}</Text>
             </View>
           </View>
@@ -148,16 +177,16 @@ export default function PaymentScreen({ booking, onBack, onPaymentSuccess }) {
             <View style={s.chipLine} />
           </View>
           <Text style={s.cardNumberDisplay}>
-            {cardNumber || '•••• •••• •••• ••••'}
+            {cardNumber || "•••• •••• •••• ••••"}
           </Text>
           <View style={s.cardBottom}>
             <View>
               <Text style={s.cardFieldLabel}>CARD HOLDER</Text>
-              <Text style={s.cardFieldValue}>{cardHolder || '—'}</Text>
+              <Text style={s.cardFieldValue}>{cardHolder || "—"}</Text>
             </View>
-            <View style={{ alignItems: 'flex-end' }}>
+            <View style={{ alignItems: "flex-end" }}>
               <Text style={s.cardFieldLabel}>EXPIRES</Text>
-              <Text style={s.cardFieldValue}>{expiry || 'MM/YY'}</Text>
+              <Text style={s.cardFieldValue}>{expiry || "MM/YY"}</Text>
             </View>
           </View>
         </View>
@@ -205,7 +234,7 @@ export default function PaymentScreen({ booking, onBack, onPaymentSuccess }) {
             <TextInput
               style={s.input}
               value={cvv}
-              onChangeText={(v) => setCvv(v.replace(/\D/g, '').slice(0, 4))}
+              onChangeText={(v) => setCvv(v.replace(/\D/g, "").slice(0, 4))}
               placeholder="•••"
               placeholderTextColor={colors.placeholder}
               keyboardType="numeric"
@@ -238,7 +267,12 @@ export default function PaymentScreen({ booking, onBack, onPaymentSuccess }) {
               <ActivityIndicator color="#fff" />
             ) : (
               <>
-                <Ionicons name="lock-closed" size={15} color="#fff" style={{ marginRight: 8 }} />
+                <Ionicons
+                  name="lock-closed"
+                  size={15}
+                  color="#fff"
+                  style={{ marginRight: 8 }}
+                />
                 <Text style={s.payBtnText}>Pay ${displayTotal.toFixed(2)}</Text>
               </>
             )}
@@ -261,9 +295,9 @@ function makeStyles(colors) {
     scroll: { paddingHorizontal: 20 },
 
     header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
       paddingHorizontal: 16,
       paddingVertical: 14,
     },
@@ -272,24 +306,24 @@ function makeStyles(colors) {
       height: 38,
       borderRadius: 19,
       backgroundColor: colors.card,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
     },
     headerTitle: {
       fontSize: 18,
-      fontWeight: '800',
+      fontWeight: "800",
       color: colors.sectionTitle,
     },
 
     // Summary
     summaryCard: {
-      flexDirection: 'row',
+      flexDirection: "row",
       backgroundColor: colors.card,
       borderRadius: 16,
-      overflow: 'hidden',
+      overflow: "hidden",
       marginBottom: 16,
       marginTop: 4,
-      shadowColor: '#000',
+      shadowColor: "#000",
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.06,
       shadowRadius: 8,
@@ -303,17 +337,17 @@ function makeStyles(colors) {
       flex: 1,
       padding: 12,
       gap: 5,
-      justifyContent: 'center',
+      justifyContent: "center",
     },
     summaryTitle: {
       fontSize: 15,
-      fontWeight: '800',
+      fontWeight: "800",
       color: colors.sectionTitle,
       marginBottom: 2,
     },
     summaryRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: 5,
     },
     summaryVenue: {
@@ -327,9 +361,9 @@ function makeStyles(colors) {
 
     // Amount
     amountRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
       backgroundColor: colors.card,
       borderRadius: 12,
       paddingHorizontal: 16,
@@ -339,17 +373,17 @@ function makeStyles(colors) {
     amountLabel: {
       fontSize: 14,
       color: colors.venueSubtext,
-      fontWeight: '500',
+      fontWeight: "500",
     },
     amountValue: {
       fontSize: 22,
-      fontWeight: '800',
-      color: '#10B981',
+      fontWeight: "800",
+      color: "#10B981",
     },
 
     sectionLabel: {
       fontSize: 16,
-      fontWeight: '800',
+      fontWeight: "800",
       color: colors.sectionTitle,
       marginBottom: 14,
     },
@@ -369,39 +403,39 @@ function makeStyles(colors) {
     cardChip: {
       width: 36,
       height: 28,
-      backgroundColor: '#F59E0B',
+      backgroundColor: "#F59E0B",
       borderRadius: 6,
-      justifyContent: 'center',
+      justifyContent: "center",
       gap: 5,
       paddingHorizontal: 4,
       marginBottom: 22,
     },
     chipLine: {
       height: 2,
-      backgroundColor: 'rgba(0,0,0,0.25)',
+      backgroundColor: "rgba(0,0,0,0.25)",
       borderRadius: 1,
     },
     cardNumberDisplay: {
       fontSize: 18,
-      fontWeight: '700',
-      color: '#fff',
+      fontWeight: "700",
+      color: "#fff",
       letterSpacing: 3,
       marginBottom: 20,
     },
     cardBottom: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      justifyContent: "space-between",
     },
     cardFieldLabel: {
       fontSize: 9,
-      color: 'rgba(255,255,255,0.6)',
+      color: "rgba(255,255,255,0.6)",
       letterSpacing: 1,
       marginBottom: 3,
     },
     cardFieldValue: {
       fontSize: 13,
-      fontWeight: '700',
-      color: '#fff',
+      fontWeight: "700",
+      color: "#fff",
     },
 
     // Inputs
@@ -409,13 +443,13 @@ function makeStyles(colors) {
       marginBottom: 14,
     },
     inputRow: {
-      flexDirection: 'row',
+      flexDirection: "row",
       gap: 12,
       marginBottom: 0,
     },
     inputLabel: {
       fontSize: 12,
-      fontWeight: '600',
+      fontWeight: "600",
       color: colors.label,
       marginBottom: 6,
     },
@@ -432,10 +466,10 @@ function makeStyles(colors) {
 
     // Error / Success
     errorBox: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: 8,
-      backgroundColor: '#FEF2F2',
+      backgroundColor: "#FEF2F2",
       borderRadius: 10,
       padding: 12,
       marginTop: 4,
@@ -443,14 +477,14 @@ function makeStyles(colors) {
     },
     errorText: {
       fontSize: 13,
-      color: '#EF4444',
+      color: "#EF4444",
       flex: 1,
     },
     successBox: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: 10,
-      backgroundColor: '#F0FDF4',
+      backgroundColor: "#F0FDF4",
       borderRadius: 10,
       padding: 14,
       marginTop: 4,
@@ -458,8 +492,8 @@ function makeStyles(colors) {
     },
     successText: {
       fontSize: 14,
-      fontWeight: '600',
-      color: '#22C55E',
+      fontWeight: "600",
+      color: "#22C55E",
     },
 
     // Pay button
@@ -467,22 +501,22 @@ function makeStyles(colors) {
       backgroundColor: colors.INDIGO,
       borderRadius: 12,
       paddingVertical: 15,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
       marginTop: 8,
     },
     payBtnDisabled: {
       opacity: 0.45,
     },
     payBtnText: {
-      color: '#fff',
+      color: "#fff",
       fontSize: 16,
-      fontWeight: '700',
+      fontWeight: "700",
     },
 
     disclaimer: {
-      textAlign: 'center',
+      textAlign: "center",
       fontSize: 11,
       color: colors.venueSubtext,
       marginTop: 12,
