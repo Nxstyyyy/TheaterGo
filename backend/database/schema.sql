@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS `productions` (
   `genre` enum('Musical','Drama','Comedy','Opera','Other') NOT NULL DEFAULT 'Other',
   `venue_id` int(10) unsigned DEFAULT NULL,
   `description` text DEFAULT NULL,
+  `duration_minutes` smallint(5) unsigned DEFAULT NULL,
   `image_url` varchar(500) DEFAULT NULL,
   `is_trending` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),

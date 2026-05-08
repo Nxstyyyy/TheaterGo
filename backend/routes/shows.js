@@ -14,8 +14,10 @@ router.get("/", authenticate, async (req, res) => {
                 p.genre,
                 p.image_url,
                 p.is_trending,
+                p.duration_minutes,
                 v.name AS venue_name,
                 v.city,
+                v.rating AS venue_rating,
                 v.image_url AS venue_image_url,
                 CAST((
                     SELECT COUNT(*)

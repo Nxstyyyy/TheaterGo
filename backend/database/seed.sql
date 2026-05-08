@@ -59,22 +59,22 @@ INSERT INTO `venues` (`name`, `address`, `city`, `rating`, `genre`, `image_url`)
 --     9=Phantom of the Opera, 10=Chicago, 11=Streetcar Named Desire,
 --     12=Rent, 13=The Book of Mormon, 14=Cats, 15=Oklahoma!
 
-INSERT INTO `productions` (`title`, `genre`, `venue_id`, `description`, `image_url`, `is_trending`) VALUES
-('Hamilton: An American Musical', 'Musical', 4, 'The story of America then, told by America now.',                        'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80', 1),
-('Wicked',                        'Musical', 5, 'The untold story of the witches of Oz.',                                 'https://images.unsplash.com/photo-1507924538820-ede94a04019d?w=600&q=80', 1),
-('The Midnight Chorus',           'Musical', 1, 'A dazzling jazz-infused musical set in 1920s New York.',                 'https://images.unsplash.com/photo-1507924538820-ede94a04019d?w=600&q=80', 1),
-('Shattered Mirrors',             'Drama',   2, 'A gripping psychological thriller on the modern stage.',                 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80', 0),
-('Last Laugh Club',               'Comedy',  3, 'A witty ensemble comedy that keeps audiences in stitches.',              'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=600&q=80', 0),
-('Hadestown',                     'Musical', 1, 'Where a song can change your fate.',                                     'https://images.unsplash.com/photo-1464375117522-1311d6a5b81f?w=600&q=80', 0),
-('Moulin Rouge! The Musical',     'Musical', 5, 'The greatest show. The greatest love story ever told.',                  'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=600&q=80', 0),
-('The Lion King',                 'Musical', 1, 'The Pride Lands come to life on Broadway.',                              'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?w=600&q=80', 0),
-('The Phantom of the Opera',      'Opera',   6, 'Andrew Lloyd Webber\'s timeless tale of obsession beneath the Paris Opera.','https://images.unsplash.com/photo-1503095396549-807759245b35?w=600&q=80', 1),
-('Chicago',                       'Musical', 4, 'All that jazz in the city of sin. Murder, ambition, and razzle-dazzle.',  'https://images.unsplash.com/photo-1545987796-200677ee1011?w=600&q=80', 1),
-('A Streetcar Named Desire',      'Drama',   2, 'Tennessee Williams\' raw portrait of desire, delusion, and decline.',     'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?w=600&q=80', 0),
-('Rent',                          'Musical', 3, 'A bohemian anthem of love and survival in New York City.',                'https://images.unsplash.com/photo-1464375117522-1311d6a5b81f?w=600&q=80', 0),
-('The Book of Mormon',            'Comedy',  5, 'The hilarious, award-winning musical from the creators of South Park.',   'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=600&q=80', 1),
-('Cats',                          'Musical', 1, 'Memories and mystery in Andrew Lloyd Webber\'s beloved feline fantasy.',   'https://images.unsplash.com/photo-1503095396549-807759245b35?w=600&q=80', 0),
-('Oklahoma!',                     'Musical', 4, 'Rodgers & Hammerstein\'s landmark celebration of the American frontier.',  'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80', 0);
+INSERT INTO `productions` (`title`, `genre`, `venue_id`, `description`, `image_url`, `is_trending`, `duration_minutes`) VALUES
+('Hamilton: An American Musical', 'Musical', 4, 'The story of America then, told by America now.',                        'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80', 1, 165),
+('Wicked',                        'Musical', 5, 'The untold story of the witches of Oz.',                                 'https://images.unsplash.com/photo-1507924538820-ede94a04019d?w=600&q=80', 1, 160),
+('The Midnight Chorus',           'Musical', 1, 'A dazzling jazz-infused musical set in 1920s New York.',                 'https://images.unsplash.com/photo-1507924538820-ede94a04019d?w=600&q=80', 1, 120),
+('Shattered Mirrors',             'Drama',   2, 'A gripping psychological thriller on the modern stage.',                 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80', 0, 110),
+('Last Laugh Club',               'Comedy',  3, 'A witty ensemble comedy that keeps audiences in stitches.',              'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=600&q=80', 0,  90),
+('Hadestown',                     'Musical', 1, 'Where a song can change your fate.',                                     'https://images.unsplash.com/photo-1464375117522-1311d6a5b81f?w=600&q=80', 0, 150),
+('Moulin Rouge! The Musical',     'Musical', 5, 'The greatest show. The greatest love story ever told.',                  'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=600&q=80', 0, 150),
+('The Lion King',                 'Musical', 1, 'The Pride Lands come to life on Broadway.',                              'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?w=600&q=80', 0, 150),
+('The Phantom of the Opera',      'Opera',   6, 'Andrew Lloyd Webber\'s timeless tale of obsession beneath the Paris Opera.','https://images.unsplash.com/photo-1503095396549-807759245b35?w=600&q=80', 1, 145),
+('Chicago',                       'Musical', 4, 'All that jazz in the city of sin. Murder, ambition, and razzle-dazzle.',  'https://images.unsplash.com/photo-1545987796-200677ee1011?w=600&q=80', 1, 135),
+('A Streetcar Named Desire',      'Drama',   2, 'Tennessee Williams\' raw portrait of desire, delusion, and decline.',     'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?w=600&q=80', 0, 120),
+('Rent',                          'Musical', 3, 'A bohemian anthem of love and survival in New York City.',                'https://images.unsplash.com/photo-1464375117522-1311d6a5b81f?w=600&q=80', 0, 150),
+('The Book of Mormon',            'Comedy',  5, 'The hilarious, award-winning musical from the creators of South Park.',   'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=600&q=80', 1, 135),
+('Cats',                          'Musical', 1, 'Memories and mystery in Andrew Lloyd Webber\'s beloved feline fantasy.',   'https://images.unsplash.com/photo-1503095396549-807759245b35?w=600&q=80', 0, 130),
+('Oklahoma!',                     'Musical', 4, 'Rodgers & Hammerstein\'s landmark celebration of the American frontier.',  'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80', 0, 150);
 
 -- Shows
 -- id: 1=Hamilton eve, 2=Hamilton mat, 3=Wicked eve, 4=Wicked mat,
@@ -84,28 +84,28 @@ INSERT INTO `productions` (`title`, `genre`, `venue_id`, `description`, `image_u
 --     16=Rent, 17=Book of Mormon, 18=Cats, 19=Oklahoma,
 --     20=Chicago (past), 21=Rent (past)
 
-INSERT INTO `shows` (`production_id`, `show_date`, `show_time`) VALUES
-(1,  CURDATE() + INTERVAL 7  DAY, '19:30:00'),  -- 1
-(1,  CURDATE() + INTERVAL 8  DAY, '14:00:00'),  -- 2
-(2,  CURDATE() + INTERVAL 21 DAY, '20:00:00'),  -- 3
-(2,  CURDATE() + INTERVAL 22 DAY, '14:00:00'),  -- 4
-(3,  CURDATE() + INTERVAL 35 DAY, '19:30:00'),  -- 5
-(3,  CURDATE() + INTERVAL 36 DAY, '15:00:00'),  -- 6
-(4,  CURDATE() + INTERVAL 49 DAY, '20:00:00'),  -- 7
-(5,  CURDATE() + INTERVAL 56 DAY, '20:00:00'),  -- 8
-(6,  '2023-09-14', '19:30:00'),                  -- 9  (past)
-(7,  '2023-08-02', '20:00:00'),                  -- 10 (past)
-(8,  '2023-05-21', '19:00:00'),                  -- 11 (past)
-(9,  CURDATE() + INTERVAL 14 DAY, '19:30:00'),  -- 12 Phantom eve
-(9,  CURDATE() + INTERVAL 15 DAY, '14:00:00'),  -- 13 Phantom mat
-(10, CURDATE() + INTERVAL 28 DAY, '20:00:00'),  -- 14 Chicago eve
-(11, CURDATE() + INTERVAL 42 DAY, '19:00:00'),  -- 15 Streetcar
-(12, CURDATE() + INTERVAL 63 DAY, '20:00:00'),  -- 16 Rent
-(13, CURDATE() + INTERVAL 70 DAY, '19:30:00'),  -- 17 Book of Mormon
-(14, CURDATE() + INTERVAL 77 DAY, '19:30:00'),  -- 18 Cats
-(15, CURDATE() + INTERVAL 84 DAY, '14:00:00'),  -- 19 Oklahoma
-(10, '2022-11-05', '20:00:00'),                  -- 20 Chicago (past)
-(12, '2022-09-18', '19:30:00');                  -- 21 Rent (past)
+INSERT INTO `shows` (`production_id`, `show_date`, `show_time`, `price_per_seat`) VALUES
+(1,  CURDATE() + INTERVAL 7  DAY, '19:30:00', 85.00),  -- 1  Hamilton eve
+(1,  CURDATE() + INTERVAL 8  DAY, '14:00:00', 75.00),  -- 2  Hamilton mat
+(2,  CURDATE() + INTERVAL 21 DAY, '20:00:00', 79.00),  -- 3  Wicked eve
+(2,  CURDATE() + INTERVAL 22 DAY, '14:00:00', 69.00),  -- 4  Wicked mat
+(3,  CURDATE() + INTERVAL 35 DAY, '19:30:00', 55.00),  -- 5  Midnight Chorus eve
+(3,  CURDATE() + INTERVAL 36 DAY, '15:00:00', 45.00),  -- 6  Midnight Chorus mat
+(4,  CURDATE() + INTERVAL 49 DAY, '20:00:00', 50.00),  -- 7  Shattered Mirrors
+(5,  CURDATE() + INTERVAL 56 DAY, '20:00:00', 35.00),  -- 8  Last Laugh Club
+(6,  '2023-09-14', '19:30:00',                60.00),  -- 9  Hadestown (past)
+(7,  '2023-08-02', '20:00:00',                70.00),  -- 10 Moulin Rouge (past)
+(8,  '2023-05-21', '19:00:00',                65.00),  -- 11 Lion King (past)
+(9,  CURDATE() + INTERVAL 14 DAY, '19:30:00', 90.00),  -- 12 Phantom eve
+(9,  CURDATE() + INTERVAL 15 DAY, '14:00:00', 80.00),  -- 13 Phantom mat
+(10, CURDATE() + INTERVAL 28 DAY, '20:00:00', 72.00),  -- 14 Chicago eve
+(11, CURDATE() + INTERVAL 42 DAY, '19:00:00', 48.00),  -- 15 Streetcar
+(12, CURDATE() + INTERVAL 63 DAY, '20:00:00', 55.00),  -- 16 Rent
+(13, CURDATE() + INTERVAL 70 DAY, '19:30:00', 78.00),  -- 17 Book of Mormon
+(14, CURDATE() + INTERVAL 77 DAY, '19:30:00', 62.00),  -- 18 Cats
+(15, CURDATE() + INTERVAL 84 DAY, '14:00:00', 58.00),  -- 19 Oklahoma
+(10, '2022-11-05', '20:00:00',                70.00),  -- 20 Chicago (past)
+(12, '2022-09-18', '19:30:00',                55.00);  -- 21 Rent (past)
 
 -- Seats
 -- Seat ids are computed from insertion order (AUTO_INCREMENT).
