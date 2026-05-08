@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { View, Text, StyleSheet, StatusBar } from "react-native";
+import { useState, useEffect, useCallback } from "react";
+import { View, Text, StyleSheet, StatusBar, BackHandler } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 
 SplashScreen.preventAutoHideAsync();
@@ -24,34 +24,82 @@ function Navigator() {
   const [screen, setScreen] = useState(null);
   const [selectedVenue, setSelectedVenue] = useState(null);
   const [selectedShow, setSelectedShow] = useState(null);
-
-  const navigateToShow = (show) => {
-    setSelectedShow(show);
-    setScreen("Show");
-  };
-  const navigateToVenue = (venue) => {
-    setSelectedVenue(venue);
-    setScreen("Venue");
-  };
   const [selectedBookShow, setSelectedBookShow] = useState(null);
   const [bookSource, setBookSource] = useState("Show");
-  const navigateToBook = (show, source = "Show") => {
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [selectedPaymentBooking, setSelectedPaymentBooking] = useState(null);
+  const [paymentBackScreen, setPaymentBackScreen] = useState("Profile");
+  const [history, setHistory] = useState([]);
+
+  const snapshot = useCallback(
+    () => ({
+      screen,
+      selectedVenue,
+      selectedShow,
+      selectedBookShow,
+      bookSource,
+      selectedBooking,
+      selectedPaymentBooking,
+      paymentBackScreen,
+    }),
+    [screen, selectedVenue, selectedShow, selectedBookShow, bookSource, selectedBooking, selectedPaymentBooking, paymentBackScreen]
+  );
+
+  const restoreSnapshot = (s) => {
+    setScreen(s.screen);
+    setSelectedVenue(s.selectedVenue);
+    setSelectedShow(s.selectedShow);
+    setSelectedBookShow(s.selectedBookShow);
+    setBookSource(s.bookSource);
+    setSelectedBooking(s.selectedBooking);
+    setSelectedPaymentBooking(s.selectedPaymentBooking);
+    setPaymentBackScreen(s.paymentBackScreen);
+  };
+
+  const goBack = useCallback(() => {
+    if (history.length === 0) return false;
+    const prev = history[history.length - 1];
+    setHistory((h) => h.slice(0, -1));
+    restoreSnapshot(prev);
+    return true;
+  }, [history]);
+
+  useEffect(() => {
+    const sub = BackHandler.addEventListener("hardwareBackPress", goBack);
+    return () => sub.remove();
+  }, [goBack]);
+
+  const push = useCallback(
+    (navigate) => {
+      setHistory((h) => [...h, snapshot()]);
+      navigate();
+    },
+    [snapshot]
+  );
+
+  const navigateToShow = (show) => push(() => {
+    setSelectedShow(show);
+    setScreen("Show");
+  });
+  const navigateToVenue = (venue) => push(() => {
+    setSelectedVenue(venue);
+    setScreen("Venue");
+  });
+
+  const navigateToBook = (show, source = "Show") => push(() => {
     setSelectedBookShow(show);
     setBookSource(source);
     setScreen("Book");
-  };
-  const [selectedBooking, setSelectedBooking] = useState(null);
-  const navigateToTicket = (booking) => {
+  });
+  const navigateToTicket = (booking) => push(() => {
     setSelectedBooking(booking);
     setScreen("Ticket");
-  };
-  const [selectedPaymentBooking, setSelectedPaymentBooking] = useState(null);
-  const [paymentBackScreen, setPaymentBackScreen] = useState("Profile");
-  const navigateToPayment = (booking, backScreen = "Profile") => {
+  });
+  const navigateToPayment = (booking, backScreen = "Profile") => push(() => {
     setSelectedPaymentBooking(booking);
     setPaymentBackScreen(backScreen);
     setScreen("Payment");
-  };
+  });
 
   useEffect(() => {
     setLogoutHandler(() => setScreen("Login"));
@@ -73,17 +121,17 @@ function Navigator() {
     if (screen === "AllShows")
       return (
         <AllShowsScreen
-          onBack={() => setScreen("Discover")}
+          onBack={goBack}
           onNavigateShow={navigateToShow}
-          onNavigateProfile={() => setScreen("Profile")}
+          onNavigateProfile={() => push(() => setScreen("Profile"))}
         />
       );
     if (screen === "Book" && selectedBookShow)
       return (
         <BookScreen
           show={selectedBookShow}
-          onBack={() => setScreen(bookSource)}
-          onBookingSuccess={() => setScreen(bookSource)}
+          onBack={goBack}
+          onBookingSuccess={goBack}
           onNavigatePayment={(booking) =>
             navigateToPayment(booking, bookSource)
           }
@@ -93,8 +141,8 @@ function Navigator() {
       return (
         <ShowScreen
           show={selectedShow}
-          onBack={() => setScreen("Discover")}
-          onNavigateProfile={() => setScreen("Profile")}
+          onBack={goBack}
+          onNavigateProfile={() => push(() => setScreen("Profile"))}
           onNavigateVenue={navigateToVenue}
           onNavigateBook={(show) => navigateToBook(show, "Show")}
         />
@@ -103,35 +151,32 @@ function Navigator() {
       return (
         <VenueScreen
           venue={selectedVenue}
-          onBack={() => setScreen("Discover")}
-          onNavigateProfile={() => setScreen("Profile")}
+          onBack={goBack}
+          onNavigateProfile={() => push(() => setScreen("Profile"))}
           onNavigateBook={(show) => navigateToBook(show, "Venue")}
         />
       );
     if (screen === "Discover")
       return (
         <DiscoverScreen
-          onNavigateProfile={() => setScreen("Profile")}
+          onNavigateProfile={() => push(() => setScreen("Profile"))}
           onNavigateVenue={navigateToVenue}
           onNavigateShow={navigateToShow}
-          onNavigateAllShows={() => setScreen("AllShows")}
+          onNavigateAllShows={() => push(() => setScreen("AllShows"))}
         />
       );
     if (screen === "Ticket" && selectedBooking)
       return (
         <TicketScreen
           booking={selectedBooking}
-          onBack={() => setScreen("Profile")}
+          onBack={goBack}
         />
       );
     if (screen === "Payment" && selectedPaymentBooking)
       return (
         <PaymentScreen
           booking={selectedPaymentBooking}
-          onBack={() => {
-            setSelectedPaymentBooking(null);
-            setScreen(paymentBackScreen);
-          }}
+          onBack={goBack}
           onPaymentSuccess={(confirmedBooking) => {
             setSelectedPaymentBooking(null);
             setSelectedBooking(confirmedBooking);
@@ -142,7 +187,7 @@ function Navigator() {
     if (screen === "Profile")
       return (
         <ProfileScreen
-          onNavigateDiscover={() => setScreen("Discover")}
+          onNavigateDiscover={() => push(() => setScreen("Discover"))}
           onLogout={() => setScreen("Login")}
           onNavigateTicket={navigateToTicket}
           onNavigatePayment={navigateToPayment}
