@@ -46,8 +46,8 @@ A theater ticket booking application for Android/iOS, built with React Native (E
 │      React Native (Expo)        │
 │         Frontend App            │
 │  - Screens / Navigation State   │
-│  - ThemeContext (Dark/Light)     │
-│  - authFetch (JWT wrapper)       │
+│  - ThemeContext (Dark/Light)    │
+│  - authFetch (JWT wrapper)      │
 └──────────────┬──────────────────┘
                │ HTTP REST (JSON)
                │ Bearer JWT Token
@@ -454,7 +454,7 @@ Content-Type: application/json
 
 ## Screenshots
 
-> Screenshots are located in the `assets/screenshots/` folder (if available).
+> Screenshots are located in the `assets/screenshots/` folder.
 
 | Screen | Description |
 |--------|-------------|
