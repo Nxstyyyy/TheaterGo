@@ -48,7 +48,10 @@ export default function DiscoverScreen({ onNavigateProfile, onNavigateVenue, onN
       try {
         const res = await authFetch(`${API_URL}/api/shows`);
         if (!res) return;
-        if (!res.ok) throw new Error('Failed to fetch shows');
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body.error || `Error ${res.status}`);
+        }
         const data = await res.json();
         setShows(data);
       } catch (err) {
