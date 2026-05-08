@@ -46,8 +46,8 @@ A theater ticket booking application for Android/iOS, built with **React Native 
 │      React Native (Expo)        │
 │         Frontend App            │
 │  - Screens / Navigation State   │
-│  - ThemeContext (Dark/Light)     │
-│  - authFetch (JWT wrapper)       │
+│  - ThemeContext (Dark/Light)    │
+│  - authFetch (JWT wrapper)      │
 └──────────────┬──────────────────┘
                │ HTTP REST (JSON)
                │ Bearer JWT Token
