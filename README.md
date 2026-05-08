@@ -339,7 +339,7 @@ The `ThemeContext` provides:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/<username>/TheaterGo.git
+git clone https://github.com/Nxstyyyy/TheaterGo.git
 cd TheaterGo
 ```
 
