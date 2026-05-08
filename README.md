@@ -3,7 +3,7 @@
 # TheaterGo <img src="frontend/assets/icon.png" width="40" height="40">
 
 </div>
-A theater ticket booking application for Android/iOS, built with React Native (Expo) on the frontend and Node.js / Express on the backend, backed by a MariaDB database.
+A theater ticket booking application for Android/iOS, built with **React Native (Expo)** on the frontend and **Node.js / Express** on the backend, backed by a **MariaDB** database.
 
 ---
 
@@ -46,8 +46,8 @@ A theater ticket booking application for Android/iOS, built with React Native (E
 │      React Native (Expo)        │
 │         Frontend App            │
 │  - Screens / Navigation State   │
-│  - ThemeContext (Dark/Light)    │
-│  - authFetch (JWT wrapper)      │
+│  - ThemeContext (Dark/Light)     │
+│  - authFetch (JWT wrapper)       │
 └──────────────┬──────────────────┘
                │ HTTP REST (JSON)
                │ Bearer JWT Token
@@ -454,16 +454,21 @@ Content-Type: application/json
 
 ## Screenshots
 
-> Screenshots are located in the `assets/screenshots/` folder.
+<div align="center">
 
-| Screen | Description |
-|--------|-------------|
-| Login / Register | User credentials entry |
-| Discover | Home screen with trending productions & venues |
-| All Shows | List with search & filters |
-| Book Screen | Seat selection grid |
-| Ticket | QR code digital ticket |
-| Profile | Booking history |
+| Login | Register | Discover |
+|:-----:|:--------:|:--------:|
+| <img src="screenshots/login_screen.png" height="400"/> | <img src="screenshots/register_screen.png" height="400"/> | <img src="screenshots/discover_screen.png" height="400"/> |
+
+| All Shows | Show | Venue |
+|:---------:|:----:|:-----:|
+| <img src="screenshots/all_shows_screen.png" height="400"/> | <img src="screenshots/show_screen.png" height="400"/> | <img src="screenshots/venue_screen.png" height="400"/> |
+
+| Book | Payment (Fake Payment) | Ticket | Profile |
+|:----:|:-------:|:------:|:-------:|
+| <img src="screenshots/book_ticket_screen.png" height="400"/> | <img src="screenshots/payment_screen.png" height="400"/> | <img src="screenshots/ticket_screen.png" height="400"/> | <img src="screenshots/profile_screen.png" height="400" /> |
+
+</div>
 
 ---
 
