@@ -129,12 +129,10 @@ export default function VenueScreen({
           </View>
           <View style={s.infoDivider} />
           <View style={s.infoItem}>
-            <Ionicons
-              name="musical-notes-outline"
-              size={18}
-              color={colors.INDIGO}
-            />
-            <Text style={s.infoLabel}>Live shows</Text>
+            <Ionicons name="star" size={18} color={colors.INDIGO} />
+            <Text style={s.infoLabel}>
+              {venue.rating != null ? Number(venue.rating).toFixed(1) : "N/A"}
+            </Text>
           </View>
         </View>
 

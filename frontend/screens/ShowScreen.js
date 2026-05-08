@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authFetch } from "../utils/authFetch";
 import { useTheme } from "../context/ThemeContext";
@@ -66,6 +66,13 @@ export default function ShowScreen({
     });
   };
 
+  const formatDuration = (minutes) => {
+    if (!minutes) return null;
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return m > 0 ? `${h}h ${m}m` : `${h}h`;
+  };
+
   return (
     <SafeAreaView style={s.safe} edges={["top"]}>
       <StatusBar style="light" />
@@ -93,9 +100,11 @@ export default function ShowScreen({
             <TouchableOpacity
               style={s.heroVenueRow}
               onPress={() =>
+               
                 onNavigateVenue?.({
                   name: show.venue_name,
                   city: show.city,
+                  rating: show.venue_rating,
                   image_url: show.venue_image_url,
                 })
               }
@@ -115,12 +124,10 @@ export default function ShowScreen({
         {/* Quick stats strip */}
         <View style={s.statsStrip}>
           <View style={s.statItem}>
-            <MaterialCommunityIcons
-              name="theater"
-              size={18}
-              color={colors.INDIGO}
-            />
-            <Text style={s.statLabel}>Live Theatre</Text>
+            <Ionicons name="time-outline" size={18} color={colors.INDIGO} />
+            <Text style={s.statLabel}>
+              {formatDuration(show.duration_minutes) ?? "Live Theatre"}
+            </Text>
           </View>
           <View style={s.statDivider} />
           <View style={s.statItem}>
@@ -238,6 +245,7 @@ export default function ShowScreen({
               onNavigateVenue?.({
                 name: show.venue_name,
                 city: show.city,
+                rating: show.venue_rating,
                 image_url: show.venue_image_url,
               })
             }

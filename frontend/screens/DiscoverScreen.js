@@ -94,6 +94,7 @@ export default function DiscoverScreen({
         acc[item.venue_name] = {
           name: item.venue_name,
           city: item.city,
+          rating: item.venue_rating,
           image_url: item.venue_image_url,
         };
       }
