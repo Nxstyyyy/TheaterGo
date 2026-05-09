@@ -41,6 +41,5 @@ yarn-error.*
 /frontend/ios
 /frontend/android
 
-run doctor.bat
 backend/files/*.apk
 build_android.bat
