@@ -23,7 +23,6 @@ const authenticate = (req, res, next) => {
 
 const signToken = (payload) => {
     try {
-        console.log(payload)
         return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
     } catch (err) {
         console.error('Error signing token:', err.message);

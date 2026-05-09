@@ -425,49 +425,30 @@ EXPO_PUBLIC_API_URL=your backend url for production
 
 ## Testing the API with Postman
 
-### Step 1: Register a User
-```
-POST http://localhost:5000/api/auth/register
-Content-Type: application/json
+A ready-to-use Postman collection is included in the repo: **`TheaterGO.postman_collection.json`**
 
-{
-  "name": "Test User",
-  "email": "test@example.com",
-  "password": "123456"
-}
-```
+### Import the Collection
 
-### Step 2: Login & Retrieve Token
-```
-POST http://localhost:5000/api/auth/login
-Content-Type: application/json
+1. Open Postman
+2. Click **Import** → select `TheaterGO.postman_collection.json`
+3. The collection will appear with three folders: **auth**, **shows**, **bookings**
 
-{
-  "email": "test@example.com",
-  "password": "123456"
-}
-```
-Copy the `token` from the response.
+### Included Requests
 
-### Step 3: Call a Protected Endpoint
-```
-GET http://localhost:5000/api/shows
-Authorization: Bearer <token>
-```
+| Folder | Request | Method | Endpoint |
+|---|---|---|---|
+| auth | Register | `POST` | `/api/auth/register` |
+| auth | Login | `POST` | `/api/auth/login` |
+| shows | Get Shows | `GET` | `/api/shows` |
+| shows | Get Show Seats | `GET` | `/api/shows/:id/seats` |
+| bookings | Create Booking | `POST` | `/api/bookings/` |
+| bookings | Get Upcoming Bookings | `GET` | `/api/bookings/` |
 
-### Step 4: Book Seats
-```
-POST http://localhost:5000/api/bookings
-Authorization: Bearer <token>
-Content-Type: application/json
+### Workflow
 
-{
-  "show_id": 1,
-  "seat_ids": [1, 2]
-}
-```
-
----
+1. **Register** or **Login** — copy the `token` from the response
+2. For protected requests, set the **Bearer Token** in the Authorization tab
+3. All requests target `http://localhost:5000` by default
 
 ## Screenshots
 
