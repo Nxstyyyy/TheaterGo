@@ -95,7 +95,7 @@ A theater ticket booking application for Android/iOS, built with **React Native 
 ## Project Structure
 
 ```
-FirstProject/
+TheaterGo/
 ├── backend/
 │   ├── index.js                # Entry point, Express setup, routes mount
 │   ├── package.json
