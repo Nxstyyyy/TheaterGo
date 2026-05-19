@@ -151,6 +151,7 @@ router.get("/past", authenticate, async (req, res) => {
             LEFT JOIN seats         s  ON s.id = bs.seat_id
             WHERE  b.user_id   = ?
               AND  sh.show_date < CURDATE()
+              AND  b.status    != 'pending'
             GROUP BY b.id, b.total_price, b.status, b.booked_at,
                      sh.show_date, sh.show_time, p.title, p.image_url,
                      v.name, v.city
